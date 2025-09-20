@@ -20,6 +20,7 @@ import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 
+
 # ------------------------------------------------------------------------------
 # Page configuration (must be first Streamlit call)
 # ------------------------------------------------------------------------------
@@ -67,7 +68,12 @@ st.markdown("""
 # ================================================================================
 
 def _find_deploy_dir() -> Path:
-    """Find deployment directory robustly across common layouts."""
+    """
+    Cari direktori artefak secara robust.
+    - Coba beberapa jalur umum (deployment di dalam folder hasil analisis).
+    - Jika tidak ada folder deployment, tapi file artefak ada di root repo,
+      gunakan root repo sebagai deployment dir.
+    """
     base = Path(__file__).resolve().parent
     candidates = [
         base / "heart_disease_analysis_results" / "deployment",
@@ -80,33 +86,56 @@ def _find_deploy_dir() -> Path:
     for c in candidates:
         if c.exists():
             return c
-    return base / "heart_disease_analysis_results" / "deployment"  # fallback
+
+    # Jika file artefak ada di root repo (sesuai repo kamu sekarang), pakai base
+    root_files = {
+        "best_original_joblib.pkl",
+        "best_original_model_joblib.pkl",
+        "best_original.pkl",
+        "scaler_joblib.pkl",
+        "deployment_info.json",
+        "deployment_info.pkl",
+    }
+    if any((base / f).exists() for f in root_files):
+        return base
+
+    # fallback
+    return base / "heart_disease_analysis_results" / "deployment"
 
 DEPLOY_DIR = _find_deploy_dir()
+
 
 def _load_joblib_any(candidates, what):
     errs = []
     for p in candidates:
         try:
-            return joblib.load(p)
+            if p.exists():
+                return joblib.load(p)
         except Exception as e:
             errs.append(f"{p} -> {e.__class__.__name__}: {e}")
     st.error(f"Failed to load {what}. Tried:\n  " + "\n  ".join(str(x) for x in candidates))
+    try:
+        st.warning("DEPLOY_DIR contents: " + ", ".join(sorted(p.name for p in DEPLOY_DIR.iterdir())))
+    except Exception:
+        pass
     if errs:
         st.warning("Last errors:\n" + "\n".join(errs[-3:]))
     st.stop()
 
+
 @st.cache_resource
 def load_models_and_data():
-    """Load model, scaler, and deployment info. Bias results optional."""
+    """Load model, scaler, deployment info. Bias results optional."""
     st.info(f"Using deployment dir: {DEPLOY_DIR}")
 
+    # Model
     model = _load_joblib_any([
         DEPLOY_DIR / "best_original_joblib.pkl",
         DEPLOY_DIR / "best_original_model_joblib.pkl",
         DEPLOY_DIR / "best_original.pkl",
     ], "best_original model")
 
+    # Scaler
     scaler = _load_joblib_any([
         DEPLOY_DIR / "scaler_joblib.pkl",
         DEPLOY_DIR / "scaler.pkl",
@@ -131,12 +160,15 @@ def load_models_and_data():
             except Exception as e:
                 st.warning(f"Cannot read {p.name}: {e}")
             break
+    if not deployment_info:
+        st.warning("deployment_info not found. Using minimal defaults; ensure selected_features available.")
 
     # Optional bias results
     bias_results = None
     bias_path_candidates = [
         DEPLOY_DIR.parent / "bias_generalizability_results.pkl",
         Path.cwd() / "heart_disease_analysis_results" / "bias_generalizability_results.pkl",
+        DEPLOY_DIR / "bias_generalizability_results.pkl",
     ]
     for bp in bias_path_candidates:
         if bp.exists():
@@ -148,6 +180,7 @@ def load_models_and_data():
             break
 
     return model, scaler, deployment_info, bias_results
+
 
 model, scaler, deployment_info, bias_results = load_models_and_data()
 
@@ -165,7 +198,7 @@ def preprocess_input(input_data: dict):
     """
     df = pd.DataFrame([input_data]).copy()
 
-    # Binary encodings (overwrite to keep same column names as training)
+    # Binary encodings (same names dengan training)
     if "Sex" in df.columns:
         df["Sex"] = 1 if str(df["Sex"].iloc[0]).upper() == "M" else 0
     if "ExerciseAngina" in df.columns:
@@ -182,24 +215,21 @@ def preprocess_input(input_data: dict):
             for cat in categories:
                 df_[f"{col}_{cat}"] = 0
 
-    # Apply fixed OHE (ensure all columns exist)
+    # Apply fixed OHE
     ensure_ohe(df, "ChestPainType", ["ATA", "NAP", "ASY", "TA"])
     ensure_ohe(df, "RestingECG", ["Normal", "ST", "LVH"])
     ensure_ohe(df, "ST_Slope", ["Up", "Flat", "Down"])
 
     # Engineered features (mirror training logic)
-    try:
-        age = float(df["Age"].iloc[0])
-        maxhr = float(df["MaxHR"].iloc[0])
-    except Exception:
-        age = df.get("Age", pd.Series([0.0])).iloc[0]
-        maxhr = df.get("MaxHR", pd.Series([0.0])).iloc[0]
+    age = float(df.get("Age", pd.Series([0])).iloc[0])
+    maxhr = float(df.get("MaxHR", pd.Series([0])).iloc[0])
 
     df["Fitness_Index"] = (maxhr / age) if age not in [0, 0.0] else 0.0
 
     for col in ["RestingBP", "Cholesterol", "Oldpeak"]:
         if col not in df.columns:
             df[col] = 0.0
+
     df["Risk_Score"] = (
         float(df["Age"].iloc[0]) * 0.1
         + float(df["RestingBP"].iloc[0]) * 0.01
@@ -208,7 +238,7 @@ def preprocess_input(input_data: dict):
         + float(df["Oldpeak"].iloc[0]) * 10.0
     )
 
-    # Age groups (one-hot)
+    # Age groups
     df["Age_Group_Young"] = 1 if 0 <= age < 40 else 0
     df["Age_Group_Middle_Young"] = 1 if 40 <= age < 50 else 0
     df["Age_Group_Middle_Old"] = 1 if 50 <= age < 60 else 0
@@ -230,7 +260,7 @@ def preprocess_input(input_data: dict):
     # Feature schema enforcement
     selected_features = deployment_info.get("selected_features", [])
     if not selected_features:
-        st.error("`selected_features` is missing in deployment info.")
+        st.error("`selected_features` is missing in deployment_info (json/pkl).")
         st.stop()
 
     for feat in selected_features:
@@ -245,7 +275,7 @@ def preprocess_input(input_data: dict):
         st.write("Current columns:", list(df.columns))
         st.stop()
 
-    # Scale numeric features
+    # Scale
     try:
         df_scaled = scaler.transform(df_selected)
     except Exception as e:
@@ -253,6 +283,7 @@ def preprocess_input(input_data: dict):
         st.stop()
 
     return df_scaled, df
+
 
 def calculate_risk_factors(input_data: dict):
     """Heuristic risk factor flags for explanation."""
@@ -294,7 +325,8 @@ def calculate_risk_factors(input_data: dict):
 
     return rf
 
-def interpret_prediction(probability: float, risk_factors: list[str]):
+
+def interpret_prediction(probability: float, risk_factors: list):
     """Map probability to risk level and recommendation."""
     if probability >= 0.8:
         return "Very High", "#d32f2f", "Immediate medical attention recommended. Consider cardiac evaluation and stress testing."
@@ -305,6 +337,7 @@ def interpret_prediction(probability: float, risk_factors: list[str]):
     if probability >= 0.2:
         return "Low-Moderate", "#689f38", "Low-moderate risk. Continue healthy lifestyle and routine check-ups."
     return "Low", "#388e3c", "Low risk. Maintain current healthy habits and regular preventive care."
+
 
 # ================================================================================
 # SIDEBAR – PATIENT INPUT
@@ -355,6 +388,7 @@ oldpeak = st.sidebar.number_input(
 st_slope = st.sidebar.selectbox("ST Slope", ["Up", "Flat", "Down"], help="Slope of peak exercise ST segment")
 
 predict_button = st.sidebar.button("🔍 Analyze Heart Disease Risk", type="primary")
+
 
 # ================================================================================
 # MAIN CONTENT
