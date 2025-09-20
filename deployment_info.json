@@ -1,0 +1,4 @@
+{"selected_features": ["Age","Sex","RestingBP","Cholesterol","MaxHR","Oldpeak",
+"ExerciseAngina","ChestPainType_ATA","ChestPainType_NAP","ChestPainType_ASY","ChestPainType_TA",
+"RestingECG_Normal","RestingECG_ST","RestingECG_LVH","ST_Slope_Up","ST_Slope_Flat","ST_Slope_Down",
+"Fitness_Index","Risk_Score","BP_Normal","BP_Elevated","BP_High","BP_Very_High","Chol_Desirable","Chol_Borderline","Chol_High"]}
