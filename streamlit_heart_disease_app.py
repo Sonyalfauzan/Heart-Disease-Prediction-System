@@ -1,7 +1,6 @@
 # streamlit_heart_disease_app.py
 # ================================================================================
 # HEART DISEASE PREDICTION SYSTEM - COMPLETE STREAMLIT APPLICATION
-# Super lengkap, professional, dan bebas error
 # ================================================================================
 
 import streamlit as st
@@ -762,31 +761,612 @@ def create_risk_factor_radar(detailed_results):
 def create_probability_distribution(probability):
     """Create probability distribution visualization"""
     
-        st.markdown('<h3>Clinical Recommendations</h3>', unsafe_allow_html=True)
-        
-        st.markdown("**Immediate Actions:**")
-        for action in recommendations['immediate_actions']:
-            st.markdown(f"- {action}")
-        
-        st.markdown("**Diagnostic Tests:**")
-        for test in recommendations['diagnostic_tests']:
-            st.markdown(f"- {test}")
-        
-        st.markdown("**Lifestyle Modifications:**")
-        for lifestyle in recommendations['lifestyle_modifications']:
-            st.markdown(f"- {lifestyle}")
-        
-        st.markdown("**Follow-up:**")
-        for follow in recommendations['follow_up']:
-            st.markdown(f"- {follow}")
-        
-        if recommendations['referrals']:
-            st.markdown("**Referrals:**")
-            for referral in recommendations['referrals']:
-                st.markdown(f"- {referral}")
+    # Generate normal distribution around the predicted probability
+    x = np.linspace(0, 1, 100)
+    std_dev = 0.1  # Standard deviation for uncertainty
+    mean = probability
     
-    else:
-        st.info("Please enter patient data and click 'Predict Heart Disease Risk' to begin.")
+    # Calculate probability density
+    y = (1 / (std_dev * np.sqrt(2 * np.pi))) * np.exp(-0.5 * ((x - mean) / std_dev) ** 2)
     
+    fig = go.Figure()
+    
+    # Add probability distribution curve
+    fig.add_trace(go.Scatter(
+        x=x * 100, 
+        y=y,
+        mode='lines',
+        fill='tozeroy',
+        name='Probability Distribution',
+        line=dict(color='#1f77b4', width=3),
+        fillcolor='rgba(31, 119, 180, 0.3)'
+    ))
+    
+    # Add predicted probability line
+    fig.add_vline(
+        x=probability * 100, 
+        line_dash="dash", 
+        line_color="red",
+        annotation_text=f"Predicted: {probability:.1%}",
+        annotation_position="top"
+    )
+    
+    fig.update_layout(
+        title="Risk Probability Distribution",
+        xaxis_title="Risk Probability (%)",
+        yaxis_title="Density",
+        height=300,
+        showlegend=False
+    )
+    
+    return fig
+
+def create_risk_comparison_chart(patient_data, detailed_results):
+    """Create comparison chart with population averages"""
+    
+    # Population averages for comparison
+    population_avg = {
+        'Age': 54.4,
+        'RestingBP': 131.6,
+        'Cholesterol': 246.3,
+        'MaxHR': 149.6,
+        'Oldpeak': 1.0
+    }
+    
+    metrics = ['Age', 'RestingBP', 'Cholesterol', 'MaxHR', 'Oldpeak']
+    patient_values = [patient_data[metric] for metric in metrics]
+    population_values = [population_avg[metric] for metric in metrics]
+    
+    x = np.arange(len(metrics))
+    width = 0.35
+    
+    fig = go.Figure()
+    
+    fig.add_trace(go.Bar(
+        name='Patient',
+        x=metrics,
+        y=patient_values,
+        marker_color='#ff7f0e'
+    ))
+    
+    fig.add_trace(go.Bar(
+        name='Population Average',
+        x=metrics,
+        y=population_values,
+        marker_color='#1f77b4'
+    ))
+    
+    fig.update_layout(
+        title='Patient vs Population Comparison',
+        xaxis_title='Parameters',
+        yaxis_title='Values',
+        barmode='group',
+        height=400
+    )
+    
+    return fig
+
+def create_risk_timeline(patient_data):
+    """Create risk timeline based on age progression"""
+    
+    current_age = patient_data['Age']
+    ages = list(range(current_age, min(current_age + 20, 90), 2))
+    
+    predictor = AdvancedHeartDiseasePredictor()
+    risk_progression = []
+    
+    for age in ages:
+        temp_data = patient_data.copy()
+        temp_data['Age'] = age
+        # Adjust max HR for age
+        temp_data['MaxHR'] = max(100, temp_data['MaxHR'] - (age - current_age) * 0.8)
+        
+        result = predictor.predict_risk_probability(temp_data)
+        risk_progression.append(result['probability'] * 100)
+    
+    fig = go.Figure()
+    
+    fig.add_trace(go.Scatter(
+        x=ages,
+        y=risk_progression,
+        mode='lines+markers',
+        name='Risk Progression',
+        line=dict(color='#d32f2f', width=3),
+        marker=dict(size=6)
+    ))
+    
+    # Add current age marker
+    current_risk_idx = 0
+    fig.add_trace(go.Scatter(
+        x=[current_age],
+        y=[risk_progression[current_risk_idx]],
+        mode='markers',
+        name='Current Age',
+        marker=dict(size=12, color='red', symbol='star')
+    ))
+    
+    fig.update_layout(
+        title='Projected Risk Timeline',
+        xaxis_title='Age (years)',
+        yaxis_title='Risk Probability (%)',
+        height=400,
+        showlegend=True
+    )
+    
+    return fig
+
+def create_risk_breakdown_pie(detailed_results):
+    """Create pie chart showing risk factor contributions"""
+    
+    individual_risks = detailed_results['individual_risks']
+    
+    # Calculate weighted contributions
+    predictor = AdvancedHeartDiseasePredictor()
+    weights = predictor.feature_weights
+    
+    weighted_risks = {
+        'Age': individual_risks['age'] * weights['age_factor'],
+        'Gender': individual_risks['gender'] * weights['gender_factor'],
+        'Chest Pain': individual_risks['chest_pain'] * weights['chest_pain_factor'],
+        'Blood Pressure': individual_risks['blood_pressure'] * weights['blood_pressure_factor'],
+        'Cholesterol': individual_risks['cholesterol'] * weights['cholesterol_factor'],
+        'Diabetes': individual_risks['diabetes'] * weights['diabetes_factor'],
+        'ECG': individual_risks['ecg'] * weights['ecg_factor'],
+        'Exercise Capacity': individual_risks['exercise_capacity'] * weights['exercise_capacity_factor'],
+        'Exercise Angina': individual_risks['exercise_angina'] * weights['exercise_angina_factor'],
+        'ST Depression': individual_risks['st_depression'] * weights['st_depression_factor'],
+        'ST Slope': individual_risks['st_slope'] * weights['st_slope_factor']
+    }
+    
+    # Filter significant contributors (> 5% of total)
+    total_weighted_risk = sum(weighted_risks.values())
+    significant_risks = {k: v for k, v in weighted_risks.items() if v/total_weighted_risk > 0.05}
+    
+    # Group small contributors as "Other"
+    other_risk = total_weighted_risk - sum(significant_risks.values())
+    if other_risk > 0:
+        significant_risks['Other'] = other_risk
+    
+    fig = go.Figure(data=[go.Pie(
+        labels=list(significant_risks.keys()),
+        values=list(significant_risks.values()),
+        hole=0.3,
+        textinfo='label+percent',
+        textposition='outside'
+    )])
+    
+    fig.update_layout(
+        title="Risk Factor Contributions",
+        height=400
+    )
+    
+    return fig
+
+# ================================================================================
+# MAIN APPLICATION
+# ================================================================================
+
+def main():
+    """Main Streamlit application"""
+    
+    # Header
+    st.markdown('<h1 class="main-header">🫀 Advanced Heart Disease Prediction System</h1>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-header">Clinical Decision Support Tool</div>', unsafe_allow_html=True)
+    
+    # Introduction
+    st.markdown("""
+    <div class="info-box">
+    <strong>About this System:</strong><br>
+    This advanced prediction system uses comprehensive clinical parameters to assess cardiovascular risk. 
+    It employs evidence-based algorithms derived from cardiology research to provide accurate risk stratification.
+    <br><br>
+    <strong>⚠️ Medical Disclaimer:</strong> This tool is for educational and informational purposes only. 
+    It should not replace professional medical advice, diagnosis, or treatment.
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Sidebar for input parameters
+    st.sidebar.markdown("## Patient Information")
+    st.sidebar.markdown("Enter the clinical parameters below:")
+    
+    # Patient Demographics
+    st.sidebar.markdown("### Demographics")
+    age = st.sidebar.slider("Age", 20, 100, 54, help="Patient age in years")
+    sex = st.sidebar.selectbox("Sex", ["M", "F"], help="M = Male, F = Female")
+    
+    # Clinical Parameters
+    st.sidebar.markdown("### Clinical Measurements")
+    
+    chest_pain_type = st.sidebar.selectbox(
+        "Chest Pain Type",
+        ["ASY", "ATA", "NAP", "TA"],
+        help="ASY: Asymptomatic, ATA: Atypical Angina, NAP: Non-Anginal Pain, TA: Typical Angina"
+    )
+    
+    resting_bp = st.sidebar.slider(
+        "Resting Blood Pressure (mmHg)", 
+        80, 200, 132,
+        help="Systolic blood pressure at rest"
+    )
+    
+    cholesterol = st.sidebar.slider(
+        "Cholesterol (mg/dl)", 
+        100, 400, 246,
+        help="Total cholesterol level"
+    )
+    
+    fasting_bs = st.sidebar.selectbox(
+        "Fasting Blood Sugar > 120 mg/dl",
+        [0, 1],
+        help="1 if fasting blood sugar > 120 mg/dl, else 0"
+    )
+    
+    resting_ecg = st.sidebar.selectbox(
+        "Resting ECG",
+        ["Normal", "ST", "LVH"],
+        help="Normal: Normal, ST: ST-T wave abnormality, LVH: Left ventricular hypertrophy"
+    )
+    
+    max_hr = st.sidebar.slider(
+        "Maximum Heart Rate Achieved", 
+        60, 220, 150,
+        help="Maximum heart rate during exercise test"
+    )
+    
+    exercise_angina = st.sidebar.selectbox(
+        "Exercise Induced Angina",
+        ["N", "Y"],
+        help="Y = Yes, N = No"
+    )
+    
+    oldpeak = st.sidebar.slider(
+        "ST Depression (Oldpeak)", 
+        0.0, 6.0, 1.0, 0.1,
+        help="ST depression induced by exercise relative to rest"
+    )
+    
+    st_slope = st.sidebar.selectbox(
+        "ST Slope",
+        ["Up", "Flat", "Down"],
+        help="Slope of the peak exercise ST segment"
+    )
+    
+    # Create patient data dictionary
+    patient_data = {
+        'Age': age,
+        'Sex': sex,
+        'ChestPainType': chest_pain_type,
+        'RestingBP': resting_bp,
+        'Cholesterol': cholesterol,
+        'FastingBS': fasting_bs,
+        'RestingECG': resting_ecg,
+        'MaxHR': max_hr,
+        'ExerciseAngina': exercise_angina,
+        'Oldpeak': oldpeak,
+        'ST_Slope': st_slope
+    }
+    
+    # Prediction button
+    if st.sidebar.button("🔍 Analyze Risk", type="primary"):
+        
+        # Initialize predictor
+        predictor = AdvancedHeartDiseasePredictor()
+        
+        # Show progress bar
+        progress_bar = st.progress(0)
+        status_text = st.empty()
+        
+        for i in range(100):
+            progress_bar.progress(i + 1)
+            if i < 30:
+                status_text.text('Analyzing patient parameters...')
+            elif i < 60:
+                status_text.text('Computing risk factors...')
+            elif i < 90:
+                status_text.text('Generating predictions...')
+            else:
+                status_text.text('Finalizing analysis...')
+            time.sleep(0.01)
+        
+        progress_bar.empty()
+        status_text.empty()
+        
+        # Make prediction
+        detailed_results = predictor.predict_risk_probability(patient_data)
+        probability = detailed_results['probability']
+        
+        # Interpret results
+        interpretation = interpret_prediction(probability, detailed_results)
+        
+        # Analyze risk factors
+        risk_factors, protective_factors = analyze_risk_factors(patient_data)
+        
+        # Generate recommendations
+        recommendations = generate_clinical_recommendations(
+            interpretation['risk_level'], probability, risk_factors
+        )
+        
+        # Display Results
+        st.markdown("---")
+        st.markdown("## 📊 Analysis Results")
+        
+        # Main risk display
+        col1, col2, col3 = st.columns([1, 2, 1])
+        
+        with col2:
+            st.plotly_chart(create_risk_gauge(probability), use_container_width=True)
+        
+        # Risk interpretation
+        risk_class = "risk-very-high" if probability >= 0.8 else \
+                    "risk-high" if probability >= 0.6 else \
+                    "risk-moderate" if probability >= 0.4 else "risk-low"
+        
+        st.markdown(f"""
+        <div class="metric-card {risk_class}">
+            <h3>🎯 Risk Assessment</h3>
+            <p><strong>Risk Level:</strong> {interpretation['risk_level']}</p>
+            <p><strong>Probability:</strong> {probability:.1%}</p>
+            <p><strong>Confidence:</strong> {interpretation['confidence_level']}</p>
+            <p><strong>Clinical Action:</strong> {interpretation['urgency']}</p>
+            <p><strong>Timeline:</strong> {interpretation['timeline']}</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Detailed visualizations
+        st.markdown("### 📈 Detailed Analysis")
+        
+        tab1, tab2, tab3, tab4 = st.tabs(["Risk Factors", "Comparisons", "Timeline", "Breakdown"])
+        
+        with tab1:
+            st.plotly_chart(create_risk_factor_radar(detailed_results), use_container_width=True)
+            
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.markdown("#### ⚠️ Risk Factors")
+                if risk_factors:
+                    for factor, severity, detail in risk_factors:
+                        severity_icon = "🔴" if severity == "Very High" else \
+                                      "🟠" if severity == "High" else \
+                                      "🟡" if severity == "Medium" else "🟢"
+                        st.markdown(f"{severity_icon} **{factor}** ({severity}): {detail}")
+                else:
+                    st.markdown("✅ No significant risk factors identified")
+            
+            with col2:
+                st.markdown("#### 🛡️ Protective Factors")
+                if protective_factors:
+                    for factor, detail in protective_factors:
+                        st.markdown(f"✅ **{factor}**: {detail}")
+                else:
+                    st.markdown("⚠️ Limited protective factors present")
+        
+        with tab2:
+            st.plotly_chart(create_risk_comparison_chart(patient_data, detailed_results), use_container_width=True)
+            st.plotly_chart(create_probability_distribution(probability), use_container_width=True)
+        
+        with tab3:
+            st.plotly_chart(create_risk_timeline(patient_data), use_container_width=True)
+            
+            st.markdown("""
+            <div class="info-box">
+            <strong>Risk Timeline Interpretation:</strong><br>
+            This chart shows how cardiovascular risk may progress with age, assuming current health parameters remain constant. 
+            The projection accounts for age-related decline in maximum heart rate and increased cardiovascular risk.
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with tab4:
+            st.plotly_chart(create_risk_breakdown_pie(detailed_results), use_container_width=True)
+            
+            # Individual risk factor details
+            st.markdown("#### Individual Risk Factor Scores")
+            individual_risks = detailed_results['individual_risks']
+            
+            for factor, risk_score in individual_risks.items():
+                percentage = risk_score * 100
+                color = get_risk_color(risk_score)
+                st.markdown(f"""
+                <div style="margin: 5px 0;">
+                    <strong>{factor.replace('_', ' ').title()}:</strong>
+                    <div style="background-color: #f0f0f0; border-radius: 10px; padding: 2px;">
+                        <div style="background-color: {color}; width: {percentage}%; height: 20px; 
+                                    border-radius: 8px; display: flex; align-items: center; padding-left: 10px;">
+                            <span style="color: white; font-weight: bold;">{percentage:.1f}%</span>
+                        </div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+        
+        # Clinical Recommendations
+        st.markdown("---")
+        st.markdown("## 🩺 Clinical Recommendations")
+        
+        rec_tab1, rec_tab2, rec_tab3 = st.tabs(["Immediate Actions", "Diagnostic Tests", "Follow-up"])
+        
+        with rec_tab1:
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.markdown("#### 🚨 Immediate Actions")
+                for action in recommendations['immediate_actions']:
+                    st.markdown(f"• {action}")
+                
+                if recommendations['referrals']:
+                    st.markdown("#### 👨‍⚕️ Specialist Referrals")
+                    for referral in recommendations['referrals']:
+                        st.markdown(f"• {referral}")
+            
+            with col2:
+                st.markdown("#### 🏃‍♂️ Lifestyle Modifications")
+                for lifestyle in recommendations['lifestyle_modifications'][:5]:  # Show top 5
+                    st.markdown(f"• {lifestyle}")
+        
+        with rec_tab2:
+            st.markdown("#### 🔬 Recommended Diagnostic Tests")
+            for test in recommendations['diagnostic_tests']:
+                st.markdown(f"• {test}")
+        
+        with rec_tab3:
+            st.markdown("#### 📅 Follow-up Schedule")
+            for followup in recommendations['follow_up']:
+                st.markdown(f"• {followup}")
+        
+        # Patient summary for export
+        st.markdown("---")
+        st.markdown("## 📋 Patient Summary")
+        
+        summary_data = {
+            "Patient ID": f"PT-{hash(str(patient_data)) % 10000:04d}",
+            "Analysis Date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "Risk Probability": f"{probability:.1%}",
+            "Risk Level": interpretation['risk_level'],
+            "Confidence": interpretation['confidence_level'],
+            "Primary Risk Factors": len(risk_factors),
+            "Protective Factors": len(protective_factors)
+        }
+        
+        summary_df = pd.DataFrame(list(summary_data.items()), columns=['Parameter', 'Value'])
+        st.dataframe(summary_df, use_container_width=True)
+        
+        # Export options
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            if st.button("📄 Generate Report"):
+                report = generate_clinical_report(patient_data, detailed_results, interpretation, 
+                                                risk_factors, protective_factors, recommendations)
+                st.download_button(
+                    label="Download Clinical Report",
+                    data=report,
+                    file_name=f"heart_disease_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt",
+                    mime="text/plain"
+                )
+        
+        with col2:
+            if st.button("📊 Export Data"):
+                export_data = {
+                    **patient_data,
+                    'predicted_probability': probability,
+                    'risk_level': interpretation['risk_level'],
+                    'analysis_date': datetime.now().isoformat()
+                }
+                st.download_button(
+                    label="Download JSON Data",
+                    data=json.dumps(export_data, indent=2),
+                    file_name=f"patient_data_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
+                    mime="application/json"
+                )
+        
+        with col3:
+            if st.button("🔄 Reset Analysis"):
+                st.experimental_rerun()
+
+def generate_clinical_report(patient_data, detailed_results, interpretation, 
+                           risk_factors, protective_factors, recommendations):
+    """Generate comprehensive clinical report"""
+    
+    report = f"""
+HEART DISEASE RISK ASSESSMENT REPORT
+=====================================
+
+Patient Information:
+- Analysis Date: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+- Patient ID: PT-{hash(str(patient_data)) % 10000:04d}
+
+Clinical Parameters:
+- Age: {patient_data['Age']} years
+- Sex: {patient_data['Sex']}
+- Chest Pain Type: {patient_data['ChestPainType']}
+- Resting Blood Pressure: {patient_data['RestingBP']} mmHg
+- Cholesterol: {patient_data['Cholesterol']} mg/dl
+- Fasting Blood Sugar: {"Yes" if patient_data['FastingBS'] == 1 else "No"} (>120 mg/dl)
+- Resting ECG: {patient_data['RestingECG']}
+- Maximum Heart Rate: {patient_data['MaxHR']} bpm
+- Exercise Angina: {"Yes" if patient_data['ExerciseAngina'] == 'Y' else "No"}
+- ST Depression: {patient_data['Oldpeak']} mm
+- ST Slope: {patient_data['ST_Slope']}
+
+RISK ASSESSMENT:
+===============
+Risk Probability: {detailed_results['probability']:.1%}
+Risk Level: {interpretation['risk_level']}
+Confidence Level: {interpretation['confidence_level']}
+Clinical Significance: {interpretation['clinical_significance']}
+
+Recommended Action: {interpretation['urgency']}
+Timeline: {interpretation['timeline']}
+
+RISK FACTORS ANALYSIS:
+=====================
+Identified Risk Factors:
+"""
+    
+    for factor, severity, detail in risk_factors:
+        report += f"- {factor} ({severity}): {detail}\n"
+    
+    report += f"\nProtective Factors:\n"
+    for factor, detail in protective_factors:
+        report += f"- {factor}: {detail}\n"
+    
+    report += f"""
+CLINICAL RECOMMENDATIONS:
+========================
+
+Immediate Actions:
+"""
+    for action in recommendations['immediate_actions']:
+        report += f"- {action}\n"
+    
+    report += f"\nDiagnostic Tests:\n"
+    for test in recommendations['diagnostic_tests']:
+        report += f"- {test}\n"
+    
+    report += f"\nLifestyle Modifications:\n"
+    for lifestyle in recommendations['lifestyle_modifications']:
+        report += f"- {lifestyle}\n"
+    
+    report += f"\nFollow-up Schedule:\n"
+    for followup in recommendations['follow_up']:
+        report += f"- {followup}\n"
+    
+    if recommendations['referrals']:
+        report += f"\nSpecialist Referrals:\n"
+        for referral in recommendations['referrals']:
+            report += f"- {referral}\n"
+    
+    report += f"""
+
+DISCLAIMER:
+===========
+This assessment is based on computational analysis of clinical parameters and should not 
+replace professional medical judgment. All recommendations should be reviewed by qualified 
+healthcare professionals before implementation.
+
+Report generated by Heart Disease Prediction System v2.0
+"""
+    
+    return report
+
+# ================================================================================
+# APPLICATION FOOTER
+# ================================================================================
+
+def display_footer():
+    """Display application footer"""
+    st.markdown("---")
+    st.markdown("""
+    <div style="text-align: center; padding: 20px; color: #666;">
+    <p><strong>Heart Disease Prediction System v2.0</strong></p>
+    <p>Advanced Clinical Decision Support Tool</p>
+    <p>⚠️ For educational and research purposes only. Not for clinical decision making.</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+# ================================================================================
+# RUN APPLICATION
+# ================================================================================
+
 if __name__ == "__main__":
     main()
+    display_footer()
