@@ -1,6 +1,6 @@
-# streamlit_heart_disease_app.py - OPTIMIZED VERSION
+# streamlit_heart_disease_app.py - ENHANCED VERSION WITH BILINGUAL SUPPORT
 # ================================================================================
-# HEART DISEASE PREDICTION SYSTEM - CLOUD-OPTIMIZED STREAMLIT APPLICATION
+# HEART DISEASE PREDICTION SYSTEM - CLOUD-OPTIMIZED WITH IMPROVED UI/UX
 # ================================================================================
 
 import streamlit as st
@@ -16,7 +16,7 @@ import sys
 import gc
 
 # ================================================================================
-# PAGE CONFIGURATION - SIMPLIFIED
+# PAGE CONFIGURATION
 # ================================================================================
 
 try:
@@ -31,7 +31,214 @@ except Exception as e:
     st.stop()
 
 # ================================================================================
-# ENHANCED CSS STYLING
+# TRANSLATIONS DICTIONARY
+# ================================================================================
+
+translations = {
+    "English": {
+        "title": "🫀 Advanced Heart Disease Prediction System",
+        "subtitle": "AI-Powered Clinical Decision Support Tool",
+        "disclaimer_title": "📋 About This System:",
+        "disclaimer_text": "This advanced prediction system uses comprehensive clinical parameters to assess cardiovascular risk. It employs evidence-based algorithms derived from cardiology research to provide accurate risk stratification.",
+        "medical_disclaimer": "⚠️ Medical Disclaimer:",
+        "medical_disclaimer_text": "This tool is for educational and informational purposes only. It should not replace professional medical advice, diagnosis, or treatment.",
+        "language_selector": "🌐 Language / Bahasa",
+        "patient_info": "👤 Patient Information",
+        "demographics": "### Demographics",
+        "age": "👶 Age (years)",
+        "age_help": "Patient's age in years. Risk increases after age 45 (men) and 55 (women)",
+        "gender": "🚻 Gender",
+        "gender_help": "M = Male, F = Female",
+        "cardiovascular_params": "### 🫀 Cardiovascular Parameters",
+        "chest_pain": "💔 Chest Pain Type",
+        "chest_pain_help": "ASY: Asymptomatic, ATA: Atypical Angina, NAP: Non-Anginal Pain, TA: Typical Angina",
+        "bp": "🩺 Resting Blood Pressure (mmHg)",
+        "bp_help": "Systolic blood pressure at rest",
+        "lab_results": "### 🧪 Laboratory Results",
+        "cholesterol": "🔬 Total Cholesterol (mg/dl)",
+        "cholesterol_help": "Total cholesterol level in blood",
+        "fasting_bs": "🍯 Fasting Blood Sugar > 120 mg/dl",
+        "fasting_bs_help": "Yes if fasting blood sugar > 120 mg/dl, else No",
+        "diagnostic_tests": "### 📊 Diagnostic Tests",
+        "ecg": "📈 Resting ECG Results",
+        "ecg_help": "Normal: Normal, ST: ST-T wave abnormality, LVH: Left ventricular hypertrophy",
+        "max_hr": "💓 Maximum Heart Rate (bpm)",
+        "max_hr_help": "Maximum heart rate achieved during exercise test",
+        "exercise_angina": "🏃‍♂️ Exercise Induced Angina",
+        "exercise_angina_help": "Chest pain during exercise",
+        "oldpeak": "📉 ST Depression (mm)",
+        "oldpeak_help": "ST depression induced by exercise relative to rest",
+        "st_slope": "📊 ST Slope Pattern",
+        "st_slope_help": "Slope of the peak exercise ST segment",
+        "analyze_button": "🔍 Analyze Cardiovascular Risk",
+        "analyzing": "🔬 Processing clinical data...",
+        "analyzing_params": "🔍 Analyzing patient parameters...",
+        "computing_risks": "⚡ Computing risk factors...",
+        "generating_predictions": "🧠 Generating AI predictions...",
+        "finalizing": "✨ Finalizing analysis...",
+        "results_title": "📊 Comprehensive Risk Analysis",
+        "risk_probability": "Risk Probability",
+        "risk_level": "Risk Level",
+        "confidence": "Confidence",
+        "priority": "Priority",
+        "identified_risk_factors": "⚠️ Identified Risk Factors",
+        "no_risk_factors": "✅ Excellent News!",
+        "no_risk_factors_text": "No significant risk factors identified in the current analysis.",
+        "individual_analysis": "📈 Individual Risk Factor Analysis",
+        "clinical_recommendations": "🩺 Clinical Recommendations",
+        "priority_level": "Priority Level:",
+        "action_timeline": "Action Timeline:",
+        "recommended_actions": "📋 Recommended Actions:",
+        "export_results": "📊 Export Results",
+        "download_analysis": "Download Analysis Results",
+        "footer_text": "Heart Disease Risk Prediction System | For educational purposes only",
+        "user_guide_title": "📖 User Guide",
+        "guide_how_to": "### How to Use This System:",
+        "guide_demographics": "**1. Demographics:**",
+        "guide_age": "- **Age**: Enter patient's age in years (20-100)",
+        "guide_gender": "- **Gender**: Select M for Male, F for Female",
+        "guide_chest_pain": "**2. Chest Pain Types:**",
+        "guide_asy": "- **ASY (Asymptomatic)**: No chest pain symptoms",
+        "guide_ata": "- **ATA (Atypical Angina)**: Chest pain not typical of heart disease",
+        "guide_nap": "- **NAP (Non-Anginal Pain)**: Chest pain unrelated to heart",
+        "guide_ta": "- **TA (Typical Angina)**: Classic heart-related chest pain",
+        "guide_bp": "**3. Blood Pressure:**",
+        "guide_bp_normal": "- Normal: < 120 mmHg",
+        "guide_bp_elevated": "- Elevated: 120-129 mmHg",
+        "guide_bp_stage1": "- High Stage 1: 130-139 mmHg",
+        "guide_bp_stage2": "- High Stage 2: ≥ 140 mmHg",
+        "guide_cholesterol": "**4. Cholesterol Levels:**",
+        "guide_chol_desirable": "- Desirable: < 200 mg/dl",
+        "guide_chol_borderline": "- Borderline: 200-239 mg/dl",
+        "guide_chol_high": "- High: ≥ 240 mg/dl",
+        "guide_ecg": "**5. ECG Results:**",
+        "guide_ecg_normal": "- **Normal**: No abnormalities",
+        "guide_ecg_st": "- **ST**: ST-T wave changes",
+        "guide_ecg_lvh": "- **LVH**: Left ventricular hypertrophy",
+        "bp_very_high": "⚠️ Very high blood pressure - immediate medical attention required",
+        "bp_high": "⚠️ High blood pressure - doctor consultation recommended",
+        "bp_elevated": "💡 Slightly elevated blood pressure - monitor regularly",
+        "bp_normal": "✅ Normal blood pressure",
+        "chol_very_high": "⚠️ Very high cholesterol - immediate intervention needed",
+        "chol_high": "⚠️ High cholesterol - lifestyle changes recommended",
+        "chol_borderline": "💡 Borderline cholesterol - monitor diet",
+        "chol_normal": "✅ Optimal cholesterol level",
+        "risk_very_high": "Very High",
+        "risk_high": "High",
+        "risk_moderate": "Moderate",
+        "risk_low": "Low",
+        "confidence_high": "High",
+        "confidence_moderate": "Moderate",
+        "confidence_low": "Low",
+        "urgent": "URGENT",
+        "high_priority": "HIGH",
+        "moderate_priority": "MODERATE",
+        "low_priority": "LOW"
+    },
+    "Bahasa Indonesia": {
+        "title": "🫀 Sistem Prediksi Penyakit Jantung Lanjutan",
+        "subtitle": "Alat Bantu Keputusan Klinis Berbasis AI",
+        "disclaimer_title": "📋 Tentang Sistem Ini:",
+        "disclaimer_text": "Sistem prediksi canggih ini menggunakan parameter klinis komprehensif untuk menilai risiko kardiovaskular. Sistem ini menggunakan algoritma berbasis bukti yang berasal dari penelitian kardiologi untuk memberikan stratifikasi risiko yang akurat.",
+        "medical_disclaimer": "⚠️ Disclaimer Medis:",
+        "medical_disclaimer_text": "Alat ini hanya untuk tujuan edukasi dan informasi. Tidak boleh menggantikan saran medis profesional, diagnosis, atau pengobatan.",
+        "language_selector": "🌐 Language / Bahasa",
+        "patient_info": "👤 Informasi Pasien",
+        "demographics": "### Demografi",
+        "age": "👶 Usia (tahun)",
+        "age_help": "Usia pasien dalam tahun. Risiko meningkat setelah usia 45 (pria) dan 55 (wanita)",
+        "gender": "🚻 Jenis Kelamin",
+        "gender_help": "L = Laki-laki, P = Perempuan",
+        "cardiovascular_params": "### 🫀 Parameter Kardiovaskular",
+        "chest_pain": "💔 Jenis Nyeri Dada",
+        "chest_pain_help": "ASY: Asimptomatik, ATA: Angina Atipikal, NAP: Nyeri Non-Anginal, TA: Angina Tipikal",
+        "bp": "🩺 Tekanan Darah Istirahat (mmHg)",
+        "bp_help": "Tekanan darah sistolik saat istirahat",
+        "lab_results": "### 🧪 Hasil Laboratorium",
+        "cholesterol": "🔬 Kolesterol Total (mg/dl)",
+        "cholesterol_help": "Kadar kolesterol total dalam darah",
+        "fasting_bs": "🍯 Gula Darah Puasa > 120 mg/dl",
+        "fasting_bs_help": "Ya jika gula darah puasa > 120 mg/dl, jika tidak pilih Tidak",
+        "diagnostic_tests": "### 📊 Tes Diagnostik",
+        "ecg": "📈 Hasil EKG Istirahat",
+        "ecg_help": "Normal: Normal, ST: Kelainan gelombang ST-T, LVH: Hipertrofi ventrikel kiri",
+        "max_hr": "💓 Denyut Jantung Maksimum (bpm)",
+        "max_hr_help": "Denyut jantung maksimum yang dicapai selama tes olahraga",
+        "exercise_angina": "🏃‍♂️ Angina Akibat Olahraga",
+        "exercise_angina_help": "Nyeri dada saat berolahraga",
+        "oldpeak": "📉 Depresi ST (mm)",
+        "oldpeak_help": "Depresi ST yang dipicu oleh olahraga relatif terhadap istirahat",
+        "st_slope": "📊 Pola Kemiringan ST",
+        "st_slope_help": "Kemiringan segmen ST puncak olahraga",
+        "analyze_button": "🔍 Analisis Risiko Kardiovaskular",
+        "analyzing": "🔬 Memproses data klinis...",
+        "analyzing_params": "🔍 Menganalisis parameter pasien...",
+        "computing_risks": "⚡ Menghitung faktor risiko...",
+        "generating_predictions": "🧠 Menghasilkan prediksi AI...",
+        "finalizing": "✨ Menyelesaikan analisis...",
+        "results_title": "📊 Analisis Risiko Komprehensif",
+        "risk_probability": "Probabilitas Risiko",
+        "risk_level": "Tingkat Risiko",
+        "confidence": "Kepercayaan",
+        "priority": "Prioritas",
+        "identified_risk_factors": "⚠️ Faktor Risiko Teridentifikasi",
+        "no_risk_factors": "✅ Kabar Baik!",
+        "no_risk_factors_text": "Tidak ada faktor risiko signifikan yang teridentifikasi dalam analisis saat ini.",
+        "individual_analysis": "📈 Analisis Faktor Risiko Individual",
+        "clinical_recommendations": "🩺 Rekomendasi Klinis",
+        "priority_level": "Tingkat Prioritas:",
+        "action_timeline": "Timeline Tindakan:",
+        "recommended_actions": "📋 Tindakan yang Direkomendasikan:",
+        "export_results": "📊 Ekspor Hasil",
+        "download_analysis": "Unduh Hasil Analisis",
+        "footer_text": "Sistem Prediksi Risiko Penyakit Jantung | Hanya untuk tujuan edukasi",
+        "user_guide_title": "📖 Panduan Penggunaan",
+        "guide_how_to": "### Cara Menggunakan Sistem Ini:",
+        "guide_demographics": "**1. Demografi:**",
+        "guide_age": "- **Usia**: Masukkan usia pasien dalam tahun (20-100)",
+        "guide_gender": "- **Jenis Kelamin**: Pilih L untuk Laki-laki, P untuk Perempuan",
+        "guide_chest_pain": "**2. Jenis Nyeri Dada:**",
+        "guide_asy": "- **ASY (Asimptomatik)**: Tidak ada gejala nyeri dada",
+        "guide_ata": "- **ATA (Angina Atipikal)**: Nyeri dada tidak khas penyakit jantung",
+        "guide_nap": "- **NAP (Nyeri Non-Anginal)**: Nyeri dada tidak terkait jantung",
+        "guide_ta": "- **TA (Angina Tipikal)**: Nyeri dada klasik terkait jantung",
+        "guide_bp": "**3. Tekanan Darah:**",
+        "guide_bp_normal": "- Normal: < 120 mmHg",
+        "guide_bp_elevated": "- Meningkat: 120-129 mmHg",
+        "guide_bp_stage1": "- Tinggi Tahap 1: 130-139 mmHg",
+        "guide_bp_stage2": "- Tinggi Tahap 2: ≥ 140 mmHg",
+        "guide_cholesterol": "**4. Kadar Kolesterol:**",
+        "guide_chol_desirable": "- Diinginkan: < 200 mg/dl",
+        "guide_chol_borderline": "- Batas: 200-239 mg/dl",
+        "guide_chol_high": "- Tinggi: ≥ 240 mg/dl",
+        "guide_ecg": "**5. Hasil EKG:**",
+        "guide_ecg_normal": "- **Normal**: Tidak ada kelainan",
+        "guide_ecg_st": "- **ST**: Perubahan gelombang ST-T",
+        "guide_ecg_lvh": "- **LVH**: Hipertrofi ventrikel kiri",
+        "bp_very_high": "⚠️ Tekanan darah sangat tinggi - perlu perhatian medis segera",
+        "bp_high": "⚠️ Tekanan darah tinggi - konsultasi dokter disarankan",
+        "bp_elevated": "💡 Tekanan darah sedikit meningkat - pantau secara berkala",
+        "bp_normal": "✅ Tekanan darah normal",
+        "chol_very_high": "⚠️ Kolesterol sangat tinggi - intervensi segera diperlukan",
+        "chol_high": "⚠️ Kolesterol tinggi - perubahan gaya hidup direkomendasikan",
+        "chol_borderline": "💡 Kolesterol batas - pantau diet",
+        "chol_normal": "✅ Kadar kolesterol optimal",
+        "risk_very_high": "Sangat Tinggi",
+        "risk_high": "Tinggi",
+        "risk_moderate": "Sedang",
+        "risk_low": "Rendah",
+        "confidence_high": "Tinggi",
+        "confidence_moderate": "Sedang",
+        "confidence_low": "Rendah",
+        "urgent": "DARURAT",
+        "high_priority": "TINGGI",
+        "moderate_priority": "SEDANG",
+        "low_priority": "RENDAH"
+    }
+}
+
+# ================================================================================
+# ENHANCED CSS STYLING WITH IMPROVED COLORS
 # ================================================================================
 
 st.markdown("""
@@ -39,110 +246,121 @@ st.markdown("""
     /* Import Google Fonts */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
     
+    /* CSS Variables for consistent theming */
+    :root {
+        --primary-blue: #1e40af;
+        --secondary-blue: #3b82f6;
+        --success-green: #059669;
+        --warning-yellow: #d97706;
+        --danger-red: #dc2626;
+        --text-primary: #1f2937;
+        --text-secondary: #6b7280;
+        --bg-primary: #ffffff;
+        --bg-secondary: #f9fafb;
+        --bg-light: #f8fafc;
+        --border-color: #e5e7eb;
+    }
+    
     /* Global Styles */
     .stApp {
         font-family: 'Inter', sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        min-height: 100vh;
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        color: var(--text-primary);
     }
     
     .main-header {
         font-size: 3.5rem;
         font-weight: 700;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+        color: var(--primary-blue);
         text-align: center;
-        margin-bottom: 2rem;
-        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 1rem;
+        text-shadow: 0 2px 4px rgba(30, 64, 175, 0.1);
         animation: fadeInDown 1s ease-out;
     }
     
     .sub-header {
-        font-size: 1.5rem;
-        color: #4a5568;
+        font-size: 1.2rem;
+        color: var(--text-secondary);
         text-align: center;
         margin-bottom: 2rem;
         font-weight: 500;
-        opacity: 0.8;
     }
     
-    /* Card Styles */
+    /* Card Styles with Better Contrast */
     .metric-card {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(20px);
+        background: var(--bg-primary);
+        color: var(--text-primary);
         padding: 2rem;
-        border-radius: 20px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 16px;
+        border: 1px solid var(--border-color);
         margin: 1.5rem 0;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         transition: all 0.3s ease;
-        border-left: 5px solid #667eea;
+        border-left: 4px solid var(--primary-blue);
     }
     
     .metric-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     }
     
-    /* Risk Level Cards */
+    /* Risk Level Cards with Better Readability */
     .risk-very-high {
-        background: linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(220, 53, 69, 0.05) 100%);
-        border-left-color: #dc3545;
-        border: 1px solid rgba(220, 53, 69, 0.2);
+        background: #fef2f2;
+        border-left-color: var(--danger-red);
+        color: #991b1b;
+        border: 1px solid #fecaca;
     }
     
     .risk-high {
-        background: linear-gradient(135deg, rgba(253, 126, 20, 0.1) 0%, rgba(253, 126, 20, 0.05) 100%);
-        border-left-color: #fd7e14;
-        border: 1px solid rgba(253, 126, 20, 0.2);
+        background: #fff7ed;
+        border-left-color: #ea580c;
+        color: #9a3412;
+        border: 1px solid #fed7aa;
     }
     
     .risk-moderate {
-        background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 193, 7, 0.05) 100%);
-        border-left-color: #ffc107;
-        border: 1px solid rgba(255, 193, 7, 0.2);
+        background: #fffbeb;
+        border-left-color: var(--warning-yellow);
+        color: #92400e;
+        border: 1px solid #fde68a;
     }
     
     .risk-low {
-        background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(40, 167, 69, 0.05) 100%);
-        border-left-color: #28a745;
-        border: 1px solid rgba(40, 167, 69, 0.2);
+        background: #f0fdf4;
+        border-left-color: var(--success-green);
+        color: #166534;
+        border: 1px solid #bbf7d0;
     }
     
     /* Info Boxes */
     .info-box {
-        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.05) 100%);
-        backdrop-filter: blur(10px);
+        background: #eff6ff;
+        color: var(--text-primary);
         padding: 1.5rem;
-        border-radius: 15px;
-        border-left: 4px solid #667eea;
+        border-radius: 12px;
+        border-left: 4px solid var(--secondary-blue);
         margin: 1.5rem 0;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
-        border: 1px solid rgba(102, 126, 234, 0.2);
+        border: 1px solid #dbeafe;
     }
     
     .warning-box {
-        background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 193, 7, 0.05) 100%);
-        border-left-color: #ffc107;
-        border: 1px solid rgba(255, 193, 7, 0.2);
+        background: #fffbeb;
+        color: #92400e;
+        border-left-color: var(--warning-yellow);
+        border: 1px solid #fde68a;
     }
     
     .success-box {
-        background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(40, 167, 69, 0.05) 100%);
-        border-left-color: #28a745;
-        border: 1px solid rgba(40, 167, 69, 0.2);
+        background: #f0fdf4;
+        color: #166534;
+        border-left-color: var(--success-green);
+        border: 1px solid #bbf7d0;
     }
     
-    /* Sidebar Styling */
-    .css-1d391kg {
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(247, 250, 252, 0.95) 100%);
-        backdrop-filter: blur(20px);
-    }
-    
-    /* Button Styles */
+    /* Enhanced Button Styles */
     .stButton > button {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
         color: white;
         border: none;
         padding: 0.75rem 2rem;
@@ -150,72 +368,71 @@ st.markdown("""
         font-weight: 600;
         font-size: 1rem;
         transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        box-shadow: 0 4px 6px -1px rgba(30, 64, 175, 0.5);
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
     
     .stButton > button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 10px 15px -3px rgba(30, 64, 175, 0.5);
+        background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
     }
     
-    .stButton > button:active {
-        transform: translateY(0px);
-    }
-    
-    /* Metric Styling */
+    /* Metric Container Styling */
     [data-testid="metric-container"] {
-        background: rgba(255, 255, 255, 0.9);
-        backdrop-filter: blur(15px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: var(--bg-primary);
+        border: 1px solid var(--border-color);
         padding: 1.5rem;
-        border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+        box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         transition: transform 0.2s ease;
     }
     
     [data-testid="metric-container"]:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     }
     
-    /* Risk Factor Styling */
+    /* Risk Factor Cards */
     .risk-factor {
-        background: rgba(255, 255, 255, 0.8);
-        backdrop-filter: blur(10px);
+        background: var(--bg-primary);
+        color: var(--text-primary);
         padding: 1rem;
-        border-radius: 12px;
+        border-radius: 8px;
         margin: 0.5rem 0;
         border-left: 4px solid transparent;
         transition: all 0.3s ease;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        border: 1px solid var(--border-color);
     }
     
     .risk-factor:hover {
-        transform: translateX(5px);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transform: translateX(3px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     }
     
-    /* Progress Bar */
-    .stProgress > div > div > div > div {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    /* Chart Container */
+    .chart-container {
+        background: var(--bg-primary);
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     }
     
     /* Text Styling */
     .big-text {
         font-size: 2rem;
         font-weight: 600;
-        color: #2d3748;
+        color: var(--text-primary);
         text-align: center;
         margin: 1rem 0;
     }
     
     .highlight-text {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+        color: var(--primary-blue);
         font-weight: 600;
     }
     
@@ -223,7 +440,7 @@ st.markdown("""
     @keyframes fadeInDown {
         from {
             opacity: 0;
-            transform: translateY(-30px);
+            transform: translateY(-20px);
         }
         to {
             opacity: 1;
@@ -234,7 +451,7 @@ st.markdown("""
     @keyframes fadeInUp {
         from {
             opacity: 0;
-            transform: translateY(30px);
+            transform: translateY(20px);
         }
         to {
             opacity: 1;
@@ -243,48 +460,28 @@ st.markdown("""
     }
     
     .fade-in-up {
-        animation: fadeInUp 0.8s ease-out;
+        animation: fadeInUp 0.6s ease-out;
     }
     
-    /* Scrollbar Styling */
-    ::-webkit-scrollbar {
-        width: 8px;
+    /* Progress Bar */
+    .stProgress > div > div > div > div {
+        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
     }
     
-    ::-webkit-scrollbar-track {
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
+    /* Sidebar Enhancements */
+    .css-1d391kg {
+        background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-light) 100%);
     }
     
-    ::-webkit-scrollbar-thumb {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 10px;
-    }
-    
-    ::-webkit-scrollbar-thumb:hover {
-        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-    }
-    
-    /* Chart Container */
-    .chart-container {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(15px);
-        border-radius: 20px;
-        padding: 1.5rem;
-        margin: 1rem 0;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-    
-    /* Footer Styling */
+    /* Footer */
     .footer {
         text-align: center;
         padding: 2rem;
-        color: rgba(255, 255, 255, 0.8);
-        background: rgba(0, 0, 0, 0.1);
-        backdrop-filter: blur(10px);
+        color: var(--text-secondary);
+        background: var(--bg-light);
         margin-top: 3rem;
-        border-radius: 15px;
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
     }
     
     /* Responsive Design */
@@ -298,6 +495,10 @@ st.markdown("""
             margin: 1rem 0;
         }
         
+        .big-text {
+            font-size: 1.5rem;
+        }
+        
         .stButton > button {
             width: 100%;
             margin: 0.5rem 0;
@@ -307,14 +508,13 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ================================================================================
-# SIMPLIFIED PREDICTION MODEL
+# PREDICTION MODEL (SIMPLIFIED BUT ACCURATE)
 # ================================================================================
 
 class HeartDiseasePredictor:
-    """Simplified but accurate heart disease predictor"""
+    """Enhanced heart disease predictor with bilingual support"""
     
     def __init__(self):
-        # Simplified feature weights
         self.weights = {
             'age': 0.15,
             'sex': 0.12,
@@ -330,7 +530,6 @@ class HeartDiseasePredictor:
         }
     
     def normalize_age(self, age):
-        """Normalize age factor"""
         if age >= 70: return 1.0
         elif age >= 60: return 0.8
         elif age >= 50: return 0.6
@@ -338,7 +537,6 @@ class HeartDiseasePredictor:
         else: return 0.2
     
     def normalize_bp(self, bp):
-        """Normalize blood pressure"""
         if bp >= 180: return 1.0
         elif bp >= 140: return 0.8
         elif bp >= 130: return 0.6
@@ -346,20 +544,16 @@ class HeartDiseasePredictor:
         else: return 0.2
     
     def normalize_cholesterol(self, chol):
-        """Normalize cholesterol"""
         if chol >= 300: return 1.0
         elif chol >= 240: return 0.8
         elif chol >= 200: return 0.6
         else: return 0.3
     
     def predict(self, patient_data):
-        """Make prediction with simplified algorithm"""
         try:
-            # Calculate normalized risk factors
             age_risk = self.normalize_age(patient_data['Age'])
-            sex_risk = 1.0 if patient_data['Sex'] == 'M' else 0.3
+            sex_risk = 1.0 if patient_data['Sex'] in ['M', 'L'] else 0.3
             
-            # Chest pain risk
             cp_map = {'ASY': 1.0, 'ATA': 0.7, 'NAP': 0.4, 'TA': 0.6}
             cp_risk = cp_map.get(patient_data['ChestPainType'], 0.5)
             
@@ -367,25 +561,19 @@ class HeartDiseasePredictor:
             chol_risk = self.normalize_cholesterol(patient_data['Cholesterol'])
             fbs_risk = 0.7 if patient_data['FastingBS'] == 1 else 0.2
             
-            # ECG risk
             ecg_map = {'Normal': 0.1, 'ST': 0.7, 'LVH': 0.9}
             ecg_risk = ecg_map.get(patient_data['RestingECG'], 0.1)
             
-            # Exercise capacity
             predicted_max_hr = 220 - patient_data['Age']
             hr_ratio = patient_data['MaxHR'] / predicted_max_hr
             hr_risk = 1.0 if hr_ratio < 0.6 else (0.8 if hr_ratio < 0.75 else 0.3)
             
-            angina_risk = 0.9 if patient_data['ExerciseAngina'] == 'Y' else 0.1
-            
-            # ST depression
+            angina_risk = 0.9 if patient_data['ExerciseAngina'] in ['Y', 'Ya'] else 0.1
             oldpeak_risk = min(1.0, patient_data['Oldpeak'] / 4.0)
             
-            # ST slope
             slope_map = {'Down': 1.0, 'Flat': 0.6, 'Up': 0.2}
             slope_risk = slope_map.get(patient_data['ST_Slope'], 0.5)
             
-            # Calculate weighted sum
             risk_score = (
                 age_risk * self.weights['age'] +
                 sex_risk * self.weights['sex'] +
@@ -400,7 +588,6 @@ class HeartDiseasePredictor:
                 slope_risk * self.weights['slope']
             )
             
-            # Convert to probability
             probability = 1 / (1 + np.exp(-(risk_score - 0.5) * 6))
             probability = max(0.01, min(0.99, probability))
             
@@ -426,60 +613,91 @@ class HeartDiseasePredictor:
             return None
 
 # ================================================================================
-# SIMPLIFIED VISUALIZATION FUNCTIONS
+# VISUALIZATION FUNCTIONS
 # ================================================================================
 
 def create_simple_gauge(probability):
-    """Create simple risk gauge"""
+    """Create enhanced risk gauge with better colors"""
     try:
         fig = go.Figure(go.Indicator(
             mode = "gauge+number",
             value = probability * 100,
             domain = {'x': [0, 1], 'y': [0, 1]},
-            title = {'text': "Risk Level (%)"},
+            title = {'text': "Risk Level (%)", 'font': {'size': 20, 'color': '#1f2937'}},
+            number = {'font': {'size': 36, 'color': get_risk_color(probability)}},
             gauge = {
-                'axis': {'range': [None, 100]},
-                'bar': {'color': get_risk_color(probability)},
+                'axis': {'range': [None, 100], 'tickcolor': "#6b7280", 'tickfont': {'size': 12}},
+                'bar': {'color': get_risk_color(probability), 'thickness': 0.75},
+                'bgcolor': "white",
+                'borderwidth': 2,
+                'bordercolor': "#e5e7eb",
                 'steps': [
-                    {'range': [0, 25], 'color': "#d4edda"},
-                    {'range': [25, 50], 'color': "#fff3cd"},
-                    {'range': [50, 75], 'color': "#f8d7da"},
-                    {'range': [75, 100], 'color': "#f5c6cb"}
-                ]
+                    {'range': [0, 25], 'color': '#f0fdf4'},
+                    {'range': [25, 50], 'color': '#fffbeb'},
+                    {'range': [50, 75], 'color': '#fff7ed'},
+                    {'range': [75, 100], 'color': '#fef2f2'}
+                ],
+                'threshold': {
+                    'line': {'color': "#dc2626", 'width': 3},
+                    'thickness': 0.75,
+                    'value': 85
+                }
             }
         ))
         
-        fig.update_layout(height=300, margin=dict(l=20, r=20, t=40, b=20))
+        fig.update_layout(
+            height=350,
+            font={'color': "#1f2937", 'family': "Inter"},
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            margin=dict(l=20, r=20, t=40, b=20)
+        )
+        
         return fig
     except Exception as e:
         st.error(f"Gauge creation error: {e}")
         return None
 
 def get_risk_color(probability):
-    """Get color based on risk"""
-    if probability >= 0.75: return "#dc3545"
-    elif probability >= 0.5: return "#fd7e14"
-    elif probability >= 0.25: return "#ffc107"
-    else: return "#28a745"
+    """Get color based on risk with improved accessibility"""
+    if probability >= 0.75: return "#dc2626"
+    elif probability >= 0.5: return "#ea580c"
+    elif probability >= 0.25: return "#d97706"
+    else: return "#059669"
 
 def create_risk_factors_chart(individual_risks):
-    """Create simple risk factors chart"""
+    """Create enhanced risk factors chart"""
     try:
-        factors = list(individual_risks.keys())
+        factors = [factor.replace('_', ' ').title() for factor in individual_risks.keys()]
         values = [v * 100 for v in individual_risks.values()]
+        
+        # Create color scale based on values
+        colors = [get_risk_color(v/100) for v in values]
         
         fig = px.bar(
             x=factors, 
             y=values,
             title="Individual Risk Factors (%)",
             color=values,
-            color_continuous_scale="Reds"
+            color_continuous_scale=[[0, "#059669"], [0.25, "#d97706"], [0.5, "#ea580c"], [1, "#dc2626"]],
+            labels={'x': 'Risk Factors', 'y': 'Risk Score (%)'}
         )
         
         fig.update_layout(
-            height=400,
+            height=450,
             xaxis_tickangle=-45,
-            showlegend=False
+            showlegend=False,
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
+            font={'color': '#1f2937', 'family': 'Inter'},
+            title_font_size=16,
+            title_x=0.5
+        )
+        
+        fig.update_traces(
+            texttemplate='%{y:.1f}%',
+            textposition='outside',
+            textfont_size=10
         )
         
         return fig
@@ -488,170 +706,373 @@ def create_risk_factors_chart(individual_risks):
         return None
 
 # ================================================================================
-# RISK ANALYSIS FUNCTIONS
+# ANALYSIS FUNCTIONS WITH BILINGUAL SUPPORT
 # ================================================================================
 
-def analyze_risk_factors(patient_data):
-    """Analyze patient risk factors"""
+def analyze_risk_factors(patient_data, language="English"):
+    """Analyze patient risk factors with bilingual support"""
     risk_factors = []
     
+    # Age analysis
     if patient_data['Age'] > 65:
-        risk_factors.append(("Advanced age", "High", f"{patient_data['Age']} years"))
+        if language == "English":
+            risk_factors.append(("Advanced age", "High", f"{patient_data['Age']} years"))
+        else:
+            risk_factors.append(("Usia lanjut", "Tinggi", f"{patient_data['Age']} tahun"))
     
-    if patient_data['Sex'] == 'M':
-        risk_factors.append(("Male gender", "Medium", "Higher baseline risk"))
+    # Gender analysis
+    if patient_data['Sex'] in ['M', 'L']:
+        if language == "English":
+            risk_factors.append(("Male gender", "Medium", "Higher baseline cardiovascular risk"))
+        else:
+            risk_factors.append(("Jenis kelamin laki-laki", "Sedang", "Risiko kardiovaskular dasar lebih tinggi"))
     
+    # Blood pressure analysis
     if patient_data['RestingBP'] >= 140:
-        risk_factors.append(("High blood pressure", "High", f"{patient_data['RestingBP']} mmHg"))
+        if language == "English":
+            risk_factors.append(("High blood pressure", "High", f"{patient_data['RestingBP']} mmHg"))
+        else:
+            risk_factors.append(("Tekanan darah tinggi", "Tinggi", f"{patient_data['RestingBP']} mmHg"))
     
+    # Cholesterol analysis
     if patient_data['Cholesterol'] >= 240:
-        risk_factors.append(("High cholesterol", "High", f"{patient_data['Cholesterol']} mg/dl"))
+        if language == "English":
+            risk_factors.append(("High cholesterol", "High", f"{patient_data['Cholesterol']} mg/dl"))
+        else:
+            risk_factors.append(("Kolesterol tinggi", "Tinggi", f"{patient_data['Cholesterol']} mg/dl"))
     
+    # Diabetes analysis
     if patient_data['FastingBS'] == 1:
-        risk_factors.append(("Diabetes", "High", "Elevated fasting glucose"))
+        if language == "English":
+            risk_factors.append(("Diabetes", "High", "Elevated fasting glucose"))
+        else:
+            risk_factors.append(("Diabetes", "Tinggi", "Glukosa puasa tinggi"))
     
-    if patient_data['ExerciseAngina'] == 'Y':
-        risk_factors.append(("Exercise angina", "High", "Chest pain with exercise"))
+    # Exercise angina analysis
+    if patient_data['ExerciseAngina'] in ['Y', 'Ya']:
+        if language == "English":
+            risk_factors.append(("Exercise angina", "High", "Chest pain with exercise"))
+        else:
+            risk_factors.append(("Angina saat olahraga", "Tinggi", "Nyeri dada saat berolahraga"))
     
+    # ST depression analysis
     if patient_data['Oldpeak'] >= 2.0:
-        risk_factors.append(("Significant ST depression", "High", f"{patient_data['Oldpeak']} mm"))
+        if language == "English":
+            risk_factors.append(("Significant ST depression", "High", f"{patient_data['Oldpeak']} mm"))
+        else:
+            risk_factors.append(("Depresi ST signifikan", "Tinggi", f"{patient_data['Oldpeak']} mm"))
     
     return risk_factors
 
-def get_recommendations(probability):
-    """Get clinical recommendations"""
-    if probability >= 0.75:
-        return {
-            'urgency': "URGENT - Immediate medical attention",
-            'actions': [
-                "Seek immediate cardiology consultation",
-                "Consider emergency evaluation if symptomatic",
-                "Start cardiac monitoring if appropriate"
-            ],
-            'timeline': "Within 24-48 hours"
-        }
-    elif probability >= 0.5:
-        return {
-            'urgency': "HIGH - Prompt medical evaluation needed",
-            'actions': [
-                "Schedule cardiology appointment within 1-2 weeks",
-                "Consider stress testing",
-                "Optimize cardiovascular risk factors"
-            ],
-            'timeline': "Within 1-2 weeks"
-        }
-    elif probability >= 0.25:
-        return {
-            'urgency': "MODERATE - Medical follow-up recommended",
-            'actions': [
-                "Primary care follow-up within 1 month",
-                "Lifestyle modifications",
-                "Regular monitoring"
-            ],
-            'timeline': "Within 1 month"
-        }
+def get_recommendations(probability, language="English"):
+    """Get clinical recommendations with bilingual support"""
+    if language == "English":
+        if probability >= 0.75:
+            return {
+                'urgency': "URGENT - Immediate medical attention required",
+                'actions': [
+                    "Seek immediate cardiology consultation",
+                    "Consider emergency evaluation if symptomatic",
+                    "Start cardiac monitoring if appropriate",
+                    "Initiate dual antiplatelet therapy if indicated"
+                ],
+                'timeline': "Within 24-48 hours"
+            }
+        elif probability >= 0.5:
+            return {
+                'urgency': "HIGH - Prompt medical evaluation needed",
+                'actions': [
+                    "Schedule cardiology appointment within 1-2 weeks",
+                    "Consider stress testing or imaging",
+                    "Optimize cardiovascular risk factors",
+                    "Start or optimize statin therapy"
+                ],
+                'timeline': "Within 1-2 weeks"
+            }
+        elif probability >= 0.25:
+            return {
+                'urgency': "MODERATE - Medical follow-up recommended",
+                'actions': [
+                    "Primary care follow-up within 1 month",
+                    "Implement lifestyle modifications",
+                    "Regular blood pressure and cholesterol monitoring",
+                    "Consider cardiac risk assessment tools"
+                ],
+                'timeline': "Within 1 month"
+            }
+        else:
+            return {
+                'urgency': "LOW - Continue preventive care",
+                'actions': [
+                    "Annual comprehensive health check-ups",
+                    "Maintain heart-healthy lifestyle",
+                    "Monitor and control risk factors",
+                    "Regular exercise and healthy diet"
+                ],
+                'timeline': "Annual follow-up"
+            }
+    else:  # Bahasa Indonesia
+        if probability >= 0.75:
+            return {
+                'urgency': "DARURAT - Perlu perhatian medis segera",
+                'actions': [
+                    "Segera konsultasi dengan ahli jantung",
+                    "Pertimbangkan evaluasi darurat jika bergejala",
+                    "Mulai pemantauan jantung jika sesuai",
+                    "Inisiasi terapi antiplatelet ganda jika diindikasikan"
+                ],
+                'timeline': "Dalam 24-48 jam"
+            }
+        elif probability >= 0.5:
+            return {
+                'urgency': "TINGGI - Evaluasi medis segera diperlukan",
+                'actions': [
+                    "Jadwalkan konsultasi kardiologi dalam 1-2 minggu",
+                    "Pertimbangkan tes stress atau pencitraan",
+                    "Optimalkan faktor risiko kardiovaskular",
+                    "Mulai atau optimalkan terapi statin"
+                ],
+                'timeline': "Dalam 1-2 minggu"
+            }
+        elif probability >= 0.25:
+            return {
+                'urgency': "SEDANG - Tindak lanjut medis direkomendasikan",
+                'actions': [
+                    "Tindak lanjut perawatan primer dalam 1 bulan",
+                    "Implementasikan modifikasi gaya hidup",
+                    "Pemantauan rutin tekanan darah dan kolesterol",
+                    "Pertimbangkan alat penilaian risiko jantung"
+                ],
+                'timeline': "Dalam 1 bulan"
+            }
+        else:
+            return {
+                'urgency': "RENDAH - Lanjutkan perawatan preventif",
+                'actions': [
+                    "Pemeriksaan kesehatan komprehensif tahunan",
+                    "Pertahankan gaya hidup sehat jantung",
+                    "Pantau dan kontrol faktor risiko",
+                    "Olahraga rutin dan diet sehat"
+                ],
+                'timeline': "Tindak lanjut tahunan"
+            }
+
+# ================================================================================
+# INPUT VALIDATION FUNCTIONS
+# ================================================================================
+
+def validate_bp(bp_value, language="English"):
+    """Validate blood pressure and provide feedback"""
+    if language == "English":
+        if bp_value >= 180:
+            return "bp_very_high"
+        elif bp_value >= 140:
+            return "bp_high"
+        elif bp_value >= 120:
+            return "bp_elevated"
+        else:
+            return "bp_normal"
     else:
-        return {
-            'urgency': "LOW - Continue preventive care",
-            'actions': [
-                "Annual health check-ups",
-                "Maintain healthy lifestyle",
-                "Monitor risk factors"
-            ],
-            'timeline': "Annual follow-up"
-        }
+        if bp_value >= 180:
+            return "bp_very_high"
+        elif bp_value >= 140:
+            return "bp_high"
+        elif bp_value >= 120:
+            return "bp_elevated"
+        else:
+            return "bp_normal"
+
+def validate_cholesterol(chol_value, language="English"):
+    """Validate cholesterol and provide feedback"""
+    if language == "English":
+        if chol_value >= 300:
+            return "chol_very_high"
+        elif chol_value >= 240:
+            return "chol_high"
+        elif chol_value >= 200:
+            return "chol_borderline"
+        else:
+            return "chol_normal"
+    else:
+        if chol_value >= 300:
+            return "chol_very_high"
+        elif chol_value >= 240:
+            return "chol_high"
+        elif chol_value >= 200:
+            return "chol_borderline"
+        else:
+            return "chol_normal"
 
 # ================================================================================
 # MAIN APPLICATION
 # ================================================================================
 
 def main():
-    """Main application function"""
+    """Enhanced main application with bilingual support"""
     try:
+        # Language selection
+        language = st.sidebar.selectbox(
+            "🌐 Language / Bahasa", 
+            ["English", "Bahasa Indonesia"],
+            help="Select your preferred language / Pilih bahasa yang diinginkan"
+        )
+        
+        # Get translations
+        t = translations[language]
+        
         # Header
-        st.markdown('<h1 class="main-header">🫀 Advanced Heart Disease Prediction System</h1>', unsafe_allow_html=True)
-        st.markdown('<p class="sub-header">AI-Powered Clinical Decision Support Tool</p>', unsafe_allow_html=True)
+        st.markdown(f'<h1 class="main-header">{t["title"]}</h1>', unsafe_allow_html=True)
+        st.markdown(f'<p class="sub-header">{t["subtitle"]}</p>', unsafe_allow_html=True)
+        
+        # User Guide
+        with st.expander(t["user_guide_title"]):
+            st.markdown(f"""
+            {t["guide_how_to"]}
+            
+            {t["guide_demographics"]}
+            {t["guide_age"]}
+            {t["guide_gender"]}
+            
+            {t["guide_chest_pain"]}
+            {t["guide_asy"]}
+            {t["guide_ata"]}
+            {t["guide_nap"]}
+            {t["guide_ta"]}
+            
+            {t["guide_bp"]}
+            {t["guide_bp_normal"]}
+            {t["guide_bp_elevated"]}
+            {t["guide_bp_stage1"]}
+            {t["guide_bp_stage2"]}
+            
+            {t["guide_cholesterol"]}
+            {t["guide_chol_desirable"]}
+            {t["guide_chol_borderline"]}
+            {t["guide_chol_high"]}
+            
+            {t["guide_ecg"]}
+            {t["guide_ecg_normal"]}
+            {t["guide_ecg_st"]}
+            {t["guide_ecg_lvh"]}
+            """)
         
         # Info box
-        st.markdown("""
+        st.markdown(f"""
         <div class="info-box fade-in-up">
-        <strong>📋 About This System:</strong><br>
-        This advanced prediction system uses comprehensive clinical parameters to assess cardiovascular risk. 
-        It employs evidence-based algorithms derived from cardiology research to provide accurate risk stratification.
+        <strong>{t["disclaimer_title"]}</strong><br>
+        {t["disclaimer_text"]}
         <br><br>
-        <strong>⚠️ Medical Disclaimer:</strong> This tool is for educational and informational purposes only. 
-        It should not replace professional medical advice, diagnosis, or treatment.
+        <strong>{t["medical_disclaimer"]}</strong> {t["medical_disclaimer_text"]}
         </div>
         """, unsafe_allow_html=True)
         
         # Sidebar inputs
-        st.sidebar.markdown("## 👤 Patient Information")
-        st.sidebar.markdown("### Demographics")
+        st.sidebar.markdown(f"## {t['patient_info']}")
+        st.sidebar.markdown(t["demographics"])
         
-        # Input fields with better descriptions
-        age = st.sidebar.slider("👶 Age (years)", 20, 100, 54, help="Patient's age in years")
-        sex = st.sidebar.selectbox("🚻 Gender", ["M", "F"], help="M = Male, F = Female")
+        # Input fields with enhanced validation
+        age = st.sidebar.slider(
+            t["age"], 
+            20, 100, 54,
+            help=t["age_help"]
+        )
         
-        st.sidebar.markdown("### 🫀 Cardiovascular Parameters")
+        if language == "English":
+            sex_options = ["M", "F"]
+            sex_labels = ["Male", "Female"]
+        else:
+            sex_options = ["L", "P"]
+            sex_labels = ["Laki-laki", "Perempuan"]
+        
+        sex = st.sidebar.selectbox(
+            t["gender"], 
+            sex_options,
+            format_func=lambda x: sex_labels[sex_options.index(x)],
+            help=t["gender_help"]
+        )
+        
+        st.sidebar.markdown(t["cardiovascular_params"])
         chest_pain_type = st.sidebar.selectbox(
-            "💔 Chest Pain Type", 
+            t["chest_pain"],
             ["ASY", "ATA", "NAP", "TA"],
-            help="ASY: Asymptomatic, ATA: Atypical Angina, NAP: Non-Anginal Pain, TA: Typical Angina"
+            help=t["chest_pain_help"]
         )
         
         resting_bp = st.sidebar.slider(
-            "🩺 Resting Blood Pressure (mmHg)", 
+            t["bp"],
             80, 200, 132,
-            help="Systolic blood pressure at rest"
+            help=t["bp_help"]
         )
         
-        st.sidebar.markdown("### 🧪 Laboratory Results")
+        # Blood pressure validation feedback
+        bp_status = validate_bp(resting_bp, language)
+        if bp_status == "bp_very_high":
+            st.sidebar.error(t[bp_status])
+        elif bp_status == "bp_high":
+            st.sidebar.warning(t[bp_status])
+        elif bp_status == "bp_elevated":
+            st.sidebar.info(t[bp_status])
+        else:
+            st.sidebar.success(t[bp_status])
+        
+        st.sidebar.markdown(t["lab_results"])
         cholesterol = st.sidebar.slider(
-            "🔬 Total Cholesterol (mg/dl)", 
+            t["cholesterol"],
             100, 400, 246,
-            help="Total cholesterol level in blood"
+            help=t["cholesterol_help"]
         )
+        
+        # Cholesterol validation feedback
+        chol_status = validate_cholesterol(cholesterol, language)
+        if chol_status == "chol_very_high":
+            st.sidebar.error(t[chol_status])
+        elif chol_status == "chol_high":
+            st.sidebar.warning(t[chol_status])
+        elif chol_status == "chol_borderline":
+            st.sidebar.info(t[chol_status])
+        else:
+            st.sidebar.success(t[chol_status])
         
         fasting_bs = st.sidebar.selectbox(
-            "🍯 Fasting Blood Sugar > 120 mg/dl",
+            t["fasting_bs"],
             [0, 1],
-            format_func=lambda x: "Yes" if x == 1 else "No",
-            help="1 if fasting blood sugar > 120 mg/dl, else 0"
+            format_func=lambda x: "Ya" if x == 1 else "Tidak" if language == "Bahasa Indonesia" else ("Yes" if x == 1 else "No"),
+            help=t["fasting_bs_help"]
         )
         
-        st.sidebar.markdown("### 📊 Diagnostic Tests")
+        st.sidebar.markdown(t["diagnostic_tests"])
         resting_ecg = st.sidebar.selectbox(
-            "📈 Resting ECG Results",
+            t["ecg"],
             ["Normal", "ST", "LVH"],
-            help="Normal: Normal, ST: ST-T wave abnormality, LVH: Left ventricular hypertrophy"
+            help=t["ecg_help"]
         )
         
         max_hr = st.sidebar.slider(
-            "💓 Maximum Heart Rate (bpm)", 
+            t["max_hr"],
             60, 220, 150,
-            help="Maximum heart rate achieved during exercise test"
+            help=t["max_hr_help"]
         )
         
         exercise_angina = st.sidebar.selectbox(
-            "🏃‍♂️ Exercise Induced Angina",
-            ["N", "Y"],
-            format_func=lambda x: "Yes" if x == "Y" else "No",
-            help="Chest pain during exercise"
+            t["exercise_angina"],
+            ["N", "Y"] if language == "English" else ["Tidak", "Ya"],
+            format_func=lambda x: "Yes" if x == "Y" else "No" if language == "English" else x,
+            help=t["exercise_angina_help"]
         )
         
         oldpeak = st.sidebar.slider(
-            "📉 ST Depression (mm)", 
+            t["oldpeak"],
             0.0, 6.0, 1.0, 0.1,
-            help="ST depression induced by exercise relative to rest"
+            help=t["oldpeak_help"]
         )
         
         st_slope = st.sidebar.selectbox(
-            "📊 ST Slope Pattern",
+            t["st_slope"],
             ["Up", "Flat", "Down"],
-            help="Slope of the peak exercise ST segment"
+            help=t["st_slope_help"]
         )
         
-        # Patient data
+        # Create patient data dictionary
         patient_data = {
             'Age': age,
             'Sex': sex,
@@ -661,13 +1082,13 @@ def main():
             'FastingBS': fasting_bs,
             'RestingECG': resting_ecg,
             'MaxHR': max_hr,
-            'ExerciseAngina': exercise_angina,
+            'ExerciseAngina': exercise_angina if language == "English" else ("Y" if exercise_angina == "Ya" else "N"),
             'Oldpeak': oldpeak,
             'ST_Slope': st_slope
         }
         
         # Prediction button
-        if st.sidebar.button("🔍 Analyze Cardiovascular Risk", type="primary"):
+        if st.sidebar.button(t["analyze_button"], type="primary"):
             
             # Progress indicator
             progress_bar = st.progress(0)
@@ -676,19 +1097,19 @@ def main():
             for i in range(100):
                 progress_bar.progress(i + 1)
                 if i < 30:
-                    status_text.text('🔍 Analyzing patient parameters...')
+                    status_text.text(t["analyzing_params"])
                 elif i < 60:
-                    status_text.text('⚡ Computing risk factors...')
+                    status_text.text(t["computing_risks"])
                 elif i < 90:
-                    status_text.text('🧠 Generating AI predictions...')
+                    status_text.text(t["generating_predictions"])
                 else:
-                    status_text.text('✨ Finalizing analysis...')
+                    status_text.text(t["finalizing"])
                 time.sleep(0.02)
             
             progress_bar.empty()
             status_text.empty()
             
-            with st.spinner("🔬 Processing clinical data..."):
+            with st.spinner(t["analyzing"]):
                 # Initialize predictor
                 predictor = HeartDiseasePredictor()
                 
@@ -698,9 +1119,9 @@ def main():
                 if results:
                     probability = results['probability']
                     
-                    # Display results with animation
+                    # Display results with enhanced styling
                     st.markdown('<div class="fade-in-up">', unsafe_allow_html=True)
-                    st.markdown("## 📊 Comprehensive Risk Analysis")
+                    st.markdown(f"## {t['results_title']}")
                     
                     # Main metrics with enhanced styling
                     col1, col2, col3, col4 = st.columns(4)
@@ -709,7 +1130,7 @@ def main():
                         st.markdown(f"""
                         <div class="metric-card">
                             <div style="text-align: center;">
-                                <h3 style="color: #667eea; margin: 0;">Risk Probability</h3>
+                                <h3 style="color: var(--primary-blue); margin: 0; font-size: 1.1rem;">{t["risk_probability"]}</h3>
                                 <div class="big-text" style="color: {get_risk_color(probability)};">
                                     {probability:.1%}
                                 </div>
@@ -718,12 +1139,23 @@ def main():
                         """, unsafe_allow_html=True)
                     
                     with col2:
-                        risk_level = "Very High" if probability >= 0.75 else "High" if probability >= 0.5 else "Moderate" if probability >= 0.25 else "Low"
-                        risk_emoji = "🔴" if probability >= 0.75 else "🟠" if probability >= 0.5 else "🟡" if probability >= 0.25 else "🟢"
+                        if probability >= 0.75:
+                            risk_level = t["risk_very_high"]
+                            risk_emoji = "🔴"
+                        elif probability >= 0.5:
+                            risk_level = t["risk_high"]
+                            risk_emoji = "🟠"
+                        elif probability >= 0.25:
+                            risk_level = t["risk_moderate"]
+                            risk_emoji = "🟡"
+                        else:
+                            risk_level = t["risk_low"]
+                            risk_emoji = "🟢"
+                            
                         st.markdown(f"""
                         <div class="metric-card">
                             <div style="text-align: center;">
-                                <h3 style="color: #667eea; margin: 0;">Risk Level</h3>
+                                <h3 style="color: var(--primary-blue); margin: 0; font-size: 1.1rem;">{t["risk_level"]}</h3>
                                 <div class="big-text">
                                     {risk_emoji} {risk_level}
                                 </div>
@@ -732,13 +1164,21 @@ def main():
                         """, unsafe_allow_html=True)
                     
                     with col3:
-                        risk_factors = analyze_risk_factors(patient_data)
-                        confidence = "High" if len(risk_factors) > 3 else "Moderate" if len(risk_factors) > 1 else "Low"
-                        conf_emoji = "💪" if confidence == "High" else "👍" if confidence == "Moderate" else "🤔"
+                        risk_factors = analyze_risk_factors(patient_data, language)
+                        if len(risk_factors) > 3:
+                            confidence = t["confidence_high"]
+                            conf_emoji = "💪"
+                        elif len(risk_factors) > 1:
+                            confidence = t["confidence_moderate"]
+                            conf_emoji = "👍"
+                        else:
+                            confidence = t["confidence_low"]
+                            conf_emoji = "🤔"
+                            
                         st.markdown(f"""
                         <div class="metric-card">
                             <div style="text-align: center;">
-                                <h3 style="color: #667eea; margin: 0;">Confidence</h3>
+                                <h3 style="color: var(--primary-blue); margin: 0; font-size: 1.1rem;">{t["confidence"]}</h3>
                                 <div class="big-text">
                                     {conf_emoji} {confidence}
                                 </div>
@@ -747,12 +1187,23 @@ def main():
                         """, unsafe_allow_html=True)
                     
                     with col4:
-                        urgency_level = "URGENT" if probability >= 0.75 else "HIGH" if probability >= 0.5 else "MODERATE" if probability >= 0.25 else "LOW"
-                        urgency_emoji = "🚨" if probability >= 0.75 else "⚠️" if probability >= 0.5 else "📋" if probability >= 0.25 else "✅"
+                        if probability >= 0.75:
+                            urgency_level = t["urgent"]
+                            urgency_emoji = "🚨"
+                        elif probability >= 0.5:
+                            urgency_level = t["high_priority"]
+                            urgency_emoji = "⚠️"
+                        elif probability >= 0.25:
+                            urgency_level = t["moderate_priority"]
+                            urgency_emoji = "📋"
+                        else:
+                            urgency_level = t["low_priority"]
+                            urgency_emoji = "✅"
+                            
                         st.markdown(f"""
                         <div class="metric-card">
                             <div style="text-align: center;">
-                                <h3 style="color: #667eea; margin: 0;">Priority</h3>
+                                <h3 style="color: var(--primary-blue); margin: 0; font-size: 1.1rem;">{t["priority"]}</h3>
                                 <div class="big-text">
                                     {urgency_emoji} {urgency_level}
                                 </div>
@@ -768,66 +1219,70 @@ def main():
                     st.markdown('</div>', unsafe_allow_html=True)
                     
                     # Risk factors analysis with enhanced styling
-                    risk_factors = analyze_risk_factors(patient_data)
-                    
                     if risk_factors:
-                        st.markdown("### ⚠️ Identified Risk Factors")
+                        st.markdown(f"### {t['identified_risk_factors']}")
                         
                         for factor, severity, detail in risk_factors:
-                            severity_color = "#dc3545" if severity == "High" else "#ffc107" if severity == "Medium" else "#28a745"
-                            severity_icon = "🔴" if severity == "High" else "🟡" if severity == "Medium" else "🟢"
+                            if language == "English":
+                                severity_color = "#dc2626" if severity == "High" else "#d97706" if severity == "Medium" else "#059669"
+                                severity_icon = "🔴" if severity == "High" else "🟡" if severity == "Medium" else "🟢"
+                                severity_text = severity
+                            else:
+                                severity_color = "#dc2626" if severity == "Tinggi" else "#d97706" if severity == "Sedang" else "#059669"
+                                severity_icon = "🔴" if severity == "Tinggi" else "🟡" if severity == "Sedang" else "🟢"
+                                severity_text = severity
                             
                             st.markdown(f"""
                             <div class="risk-factor" style="border-left-color: {severity_color};">
                                 <strong>{severity_icon} {factor}</strong> 
-                                <span style="color: {severity_color}; font-weight: 600;">({severity} Risk)</span>
+                                <span style="color: {severity_color}; font-weight: 600;">({severity_text} Risk)</span>
                                 <br>
-                                <small style="color: #6c757d;">{detail}</small>
+                                <small style="color: #6b7280;">{detail}</small>
                             </div>
                             """, unsafe_allow_html=True)
                     else:
-                        st.markdown("""
+                        st.markdown(f"""
                         <div class="success-box">
-                            <strong>✅ Excellent News!</strong><br>
-                            No significant risk factors identified in the current analysis.
+                            <strong>{t["no_risk_factors"]}</strong><br>
+                            {t["no_risk_factors_text"]}
                         </div>
                         """, unsafe_allow_html=True)
                     
                     # Risk factors chart in container
                     if 'individual_risks' in results:
                         st.markdown('<div class="chart-container">', unsafe_allow_html=True)
-                        st.markdown("### 📈 Individual Risk Factor Analysis")
+                        st.markdown(f"### {t['individual_analysis']}")
                         chart = create_risk_factors_chart(results['individual_risks'])
                         if chart:
                             st.plotly_chart(chart, use_container_width=True)
                         st.markdown('</div>', unsafe_allow_html=True)
                     
                     # Enhanced recommendations
-                    recommendations = get_recommendations(probability)
+                    recommendations = get_recommendations(probability, language)
                     
                     risk_class = "risk-very-high" if probability >= 0.75 else "risk-high" if probability >= 0.5 else "risk-moderate" if probability >= 0.25 else "risk-low"
                     
                     st.markdown(f"""
                     <div class="metric-card {risk_class}">
-                        <h3>🩺 Clinical Recommendations</h3>
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin: 1rem 0;">
-                            <div>
-                                <strong>Priority Level:</strong> 
+                        <h3>{t["clinical_recommendations"]}</h3>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin: 1rem 0; flex-wrap: wrap;">
+                            <div style="margin-bottom: 0.5rem;">
+                                <strong>{t["priority_level"]}</strong> 
                                 <span class="highlight-text">{recommendations['urgency']}</span>
                             </div>
-                            <div>
-                                <strong>Action Timeline:</strong> 
-                                <span style="color: #495057; font-weight: 600;">{recommendations['timeline']}</span>
+                            <div style="margin-bottom: 0.5rem;">
+                                <strong>{t["action_timeline"]}</strong> 
+                                <span style="color: #4b5563; font-weight: 600;">{recommendations['timeline']}</span>
                             </div>
                         </div>
                         
-                        <div style="background: rgba(255,255,255,0.7); padding: 1rem; border-radius: 10px; margin-top: 1rem;">
-                            <strong>📋 Recommended Actions:</strong>
+                        <div style="background: rgba(255,255,255,0.8); padding: 1rem; border-radius: 10px; margin-top: 1rem;">
+                            <strong>{t["recommended_actions"]}</strong>
                             <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
                     """, unsafe_allow_html=True)
                     
                     for action in recommendations['actions']:
-                        st.markdown(f"<li style='margin: 0.3rem 0; color: #495057;'>{action}</li>", unsafe_allow_html=True)
+                        st.markdown(f"<li style='margin: 0.4rem 0; color: #374151;'>{action}</li>", unsafe_allow_html=True)
                     
                     st.markdown("""
                             </ul>
@@ -835,29 +1290,35 @@ def main():
                     </div>
                     """, unsafe_allow_html=True)
                     
-                    # Export data
-                    if st.button("📊 Export Results"):
+                    # Export functionality
+                    if st.button(t["export_results"]):
                         export_data = {
                             **patient_data,
                             'predicted_probability': float(probability),
                             'risk_level': risk_level,
-                            'analysis_date': datetime.now().isoformat()
+                            'confidence': confidence,
+                            'recommendations': recommendations,
+                            'risk_factors': risk_factors,
+                            'analysis_date': datetime.now().isoformat(),
+                            'language': language
                         }
                         st.download_button(
-                            label="Download Analysis Results",
-                            data=json.dumps(export_data, indent=2),
+                            label=t["download_analysis"],
+                            data=json.dumps(export_data, indent=2, ensure_ascii=False),
                             file_name=f"heart_risk_analysis_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
                             mime="application/json"
                         )
+                    
+                    st.markdown('</div>', unsafe_allow_html=True)
                 
                 else:
-                    st.error("Error in prediction. Please check your inputs.")
+                    st.error("Error in prediction. Please check your inputs." if language == "English" 
+                           else "Error dalam prediksi. Mohon periksa input Anda.")
         
         # Footer
-        st.markdown("---")
-        st.markdown("""
-        <div style="text-align: center; color: #666;">
-        <p>Heart Disease Risk Prediction System | For educational purposes only</p>
+        st.markdown(f"""
+        <div class="footer">
+            <p><strong>{t["footer_text"]}</strong></p>
         </div>
         """, unsafe_allow_html=True)
         
@@ -865,8 +1326,10 @@ def main():
         gc.collect()
         
     except Exception as e:
-        st.error(f"Application error: {e}")
-        st.error("Please refresh the page and try again.")
+        error_msg = f"Application error: {e}" if language == "English" else f"Error aplikasi: {e}"
+        st.error(error_msg)
+        refresh_msg = "Please refresh the page and try again." if language == "English" else "Mohon refresh halaman dan coba lagi."
+        st.error(refresh_msg)
 
 # ================================================================================
 # RUN APPLICATION
@@ -877,4 +1340,5 @@ if __name__ == "__main__":
         main()
     except Exception as e:
         st.error(f"Fatal error: {e}")
-        st.error("Please contact support if this persists.")
+        st.error("Please contact support if this persists." if st.session_state.get('language', 'English') == 'English' 
+               else "Mohon hubungi dukungan jika masalah berlanjut.")
