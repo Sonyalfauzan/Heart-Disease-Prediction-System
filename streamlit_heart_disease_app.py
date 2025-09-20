@@ -31,37 +31,277 @@ except Exception as e:
     st.stop()
 
 # ================================================================================
-# SIMPLIFIED CSS STYLING
+# ENHANCED CSS STYLING
 # ================================================================================
 
 st.markdown("""
 <style>
+    /* Import Google Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    /* Global Styles */
+    .stApp {
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+    }
+    
     .main-header {
-        font-size: 3rem;
-        color: #1f77b4;
+        font-size: 3.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
         text-align: center;
         margin-bottom: 2rem;
-        font-weight: bold;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        animation: fadeInDown 1s ease-out;
     }
     
+    .sub-header {
+        font-size: 1.5rem;
+        color: #4a5568;
+        text-align: center;
+        margin-bottom: 2rem;
+        font-weight: 500;
+        opacity: 0.8;
+    }
+    
+    /* Card Styles */
     .metric-card {
-        background: #f8f9fa;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        padding: 2rem;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        margin: 1.5rem 0;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        border-left: 5px solid #667eea;
+    }
+    
+    .metric-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* Risk Level Cards */
+    .risk-very-high {
+        background: linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(220, 53, 69, 0.05) 100%);
+        border-left-color: #dc3545;
+        border: 1px solid rgba(220, 53, 69, 0.2);
+    }
+    
+    .risk-high {
+        background: linear-gradient(135deg, rgba(253, 126, 20, 0.1) 0%, rgba(253, 126, 20, 0.05) 100%);
+        border-left-color: #fd7e14;
+        border: 1px solid rgba(253, 126, 20, 0.2);
+    }
+    
+    .risk-moderate {
+        background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 193, 7, 0.05) 100%);
+        border-left-color: #ffc107;
+        border: 1px solid rgba(255, 193, 7, 0.2);
+    }
+    
+    .risk-low {
+        background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(40, 167, 69, 0.05) 100%);
+        border-left-color: #28a745;
+        border: 1px solid rgba(40, 167, 69, 0.2);
+    }
+    
+    /* Info Boxes */
+    .info-box {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.05) 100%);
+        backdrop-filter: blur(10px);
         padding: 1.5rem;
-        border-radius: 10px;
-        border-left: 4px solid #1f77b4;
+        border-radius: 15px;
+        border-left: 4px solid #667eea;
+        margin: 1.5rem 0;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+        border: 1px solid rgba(102, 126, 234, 0.2);
+    }
+    
+    .warning-box {
+        background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 193, 7, 0.05) 100%);
+        border-left-color: #ffc107;
+        border: 1px solid rgba(255, 193, 7, 0.2);
+    }
+    
+    .success-box {
+        background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(40, 167, 69, 0.05) 100%);
+        border-left-color: #28a745;
+        border: 1px solid rgba(40, 167, 69, 0.2);
+    }
+    
+    /* Sidebar Styling */
+    .css-1d391kg {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(247, 250, 252, 0.95) 100%);
+        backdrop-filter: blur(20px);
+    }
+    
+    /* Button Styles */
+    .stButton > button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .stButton > button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    }
+    
+    .stButton > button:active {
+        transform: translateY(0px);
+    }
+    
+    /* Metric Styling */
+    [data-testid="metric-container"] {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 1.5rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease;
+    }
+    
+    [data-testid="metric-container"]:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* Risk Factor Styling */
+    .risk-factor {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(10px);
+        padding: 1rem;
+        border-radius: 12px;
+        margin: 0.5rem 0;
+        border-left: 4px solid transparent;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    .risk-factor:hover {
+        transform: translateX(5px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Progress Bar */
+    .stProgress > div > div > div > div {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    /* Text Styling */
+    .big-text {
+        font-size: 2rem;
+        font-weight: 600;
+        color: #2d3748;
+        text-align: center;
         margin: 1rem 0;
     }
     
-    .risk-high { border-left-color: #dc3545; background: #fff5f5; }
-    .risk-moderate { border-left-color: #ffc107; background: #fffdf0; }
-    .risk-low { border-left-color: #28a745; background: #f8fff8; }
+    .highlight-text {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 600;
+    }
     
-    .info-box {
-        background-color: #e3f2fd;
-        padding: 1rem;
-        border-radius: 8px;
-        border-left: 4px solid #2196f3;
+    /* Animations */
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .fade-in-up {
+        animation: fadeInUp 0.8s ease-out;
+    }
+    
+    /* Scrollbar Styling */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    }
+    
+    /* Chart Container */
+    .chart-container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(15px);
+        border-radius: 20px;
+        padding: 1.5rem;
         margin: 1rem 0;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    /* Footer Styling */
+    .footer {
+        text-align: center;
+        padding: 2rem;
+        color: rgba(255, 255, 255, 0.8);
+        background: rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+        margin-top: 3rem;
+        border-radius: 15px;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .main-header {
+            font-size: 2.5rem;
+        }
+        
+        .metric-card {
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .stButton > button {
+            width: 100%;
+            margin: 0.5rem 0;
+        }
     }
 </style>
 """, unsafe_allow_html=True)
@@ -329,30 +569,87 @@ def main():
     """Main application function"""
     try:
         # Header
-        st.markdown('<h1 class="main-header">❤️ Heart Disease Risk Predictor</h1>', unsafe_allow_html=True)
+        st.markdown('<h1 class="main-header">🫀 Advanced Heart Disease Prediction System</h1>', unsafe_allow_html=True)
+        st.markdown('<p class="sub-header">AI-Powered Clinical Decision Support Tool</p>', unsafe_allow_html=True)
         
         # Info box
         st.markdown("""
-        <div class="info-box">
-        <strong>Medical Disclaimer:</strong> This tool is for educational purposes only and should not replace professional medical advice.
+        <div class="info-box fade-in-up">
+        <strong>📋 About This System:</strong><br>
+        This advanced prediction system uses comprehensive clinical parameters to assess cardiovascular risk. 
+        It employs evidence-based algorithms derived from cardiology research to provide accurate risk stratification.
+        <br><br>
+        <strong>⚠️ Medical Disclaimer:</strong> This tool is for educational and informational purposes only. 
+        It should not replace professional medical advice, diagnosis, or treatment.
         </div>
         """, unsafe_allow_html=True)
         
         # Sidebar inputs
-        st.sidebar.header("Patient Information")
+        st.sidebar.markdown("## 👤 Patient Information")
+        st.sidebar.markdown("### Demographics")
         
-        # Input fields
-        age = st.sidebar.slider("Age", 20, 100, 54)
-        sex = st.sidebar.selectbox("Sex", ["M", "F"])
-        chest_pain_type = st.sidebar.selectbox("Chest Pain Type", ["ASY", "ATA", "NAP", "TA"])
-        resting_bp = st.sidebar.slider("Resting BP (mmHg)", 80, 200, 132)
-        cholesterol = st.sidebar.slider("Cholesterol (mg/dl)", 100, 400, 246)
-        fasting_bs = st.sidebar.selectbox("Fasting Blood Sugar > 120 mg/dl", [0, 1])
-        resting_ecg = st.sidebar.selectbox("Resting ECG", ["Normal", "ST", "LVH"])
-        max_hr = st.sidebar.slider("Max Heart Rate", 60, 220, 150)
-        exercise_angina = st.sidebar.selectbox("Exercise Angina", ["N", "Y"])
-        oldpeak = st.sidebar.slider("ST Depression (Oldpeak)", 0.0, 6.0, 1.0, 0.1)
-        st_slope = st.sidebar.selectbox("ST Slope", ["Up", "Flat", "Down"])
+        # Input fields with better descriptions
+        age = st.sidebar.slider("👶 Age (years)", 20, 100, 54, help="Patient's age in years")
+        sex = st.sidebar.selectbox("🚻 Gender", ["M", "F"], help="M = Male, F = Female")
+        
+        st.sidebar.markdown("### 🫀 Cardiovascular Parameters")
+        chest_pain_type = st.sidebar.selectbox(
+            "💔 Chest Pain Type", 
+            ["ASY", "ATA", "NAP", "TA"],
+            help="ASY: Asymptomatic, ATA: Atypical Angina, NAP: Non-Anginal Pain, TA: Typical Angina"
+        )
+        
+        resting_bp = st.sidebar.slider(
+            "🩺 Resting Blood Pressure (mmHg)", 
+            80, 200, 132,
+            help="Systolic blood pressure at rest"
+        )
+        
+        st.sidebar.markdown("### 🧪 Laboratory Results")
+        cholesterol = st.sidebar.slider(
+            "🔬 Total Cholesterol (mg/dl)", 
+            100, 400, 246,
+            help="Total cholesterol level in blood"
+        )
+        
+        fasting_bs = st.sidebar.selectbox(
+            "🍯 Fasting Blood Sugar > 120 mg/dl",
+            [0, 1],
+            format_func=lambda x: "Yes" if x == 1 else "No",
+            help="1 if fasting blood sugar > 120 mg/dl, else 0"
+        )
+        
+        st.sidebar.markdown("### 📊 Diagnostic Tests")
+        resting_ecg = st.sidebar.selectbox(
+            "📈 Resting ECG Results",
+            ["Normal", "ST", "LVH"],
+            help="Normal: Normal, ST: ST-T wave abnormality, LVH: Left ventricular hypertrophy"
+        )
+        
+        max_hr = st.sidebar.slider(
+            "💓 Maximum Heart Rate (bpm)", 
+            60, 220, 150,
+            help="Maximum heart rate achieved during exercise test"
+        )
+        
+        exercise_angina = st.sidebar.selectbox(
+            "🏃‍♂️ Exercise Induced Angina",
+            ["N", "Y"],
+            format_func=lambda x: "Yes" if x == "Y" else "No",
+            help="Chest pain during exercise"
+        )
+        
+        oldpeak = st.sidebar.slider(
+            "📉 ST Depression (mm)", 
+            0.0, 6.0, 1.0, 0.1,
+            help="ST depression induced by exercise relative to rest"
+        )
+        
+        st_slope = st.sidebar.selectbox(
+            "📊 ST Slope Pattern",
+            ["Up", "Flat", "Down"],
+            help="Slope of the peak exercise ST segment"
+        )
         
         # Patient data
         patient_data = {
@@ -370,9 +667,28 @@ def main():
         }
         
         # Prediction button
-        if st.sidebar.button("🔍 Predict Risk", type="primary"):
+        if st.sidebar.button("🔍 Analyze Cardiovascular Risk", type="primary"):
             
-            with st.spinner("Analyzing patient data..."):
+            # Progress indicator
+            progress_bar = st.progress(0)
+            status_text = st.empty()
+            
+            for i in range(100):
+                progress_bar.progress(i + 1)
+                if i < 30:
+                    status_text.text('🔍 Analyzing patient parameters...')
+                elif i < 60:
+                    status_text.text('⚡ Computing risk factors...')
+                elif i < 90:
+                    status_text.text('🧠 Generating AI predictions...')
+                else:
+                    status_text.text('✨ Finalizing analysis...')
+                time.sleep(0.02)
+            
+            progress_bar.empty()
+            status_text.empty()
+            
+            with st.spinner("🔬 Processing clinical data..."):
                 # Initialize predictor
                 predictor = HeartDiseasePredictor()
                 
@@ -382,58 +698,142 @@ def main():
                 if results:
                     probability = results['probability']
                     
-                    # Display results
-                    st.markdown("## 📊 Analysis Results")
+                    # Display results with animation
+                    st.markdown('<div class="fade-in-up">', unsafe_allow_html=True)
+                    st.markdown("## 📊 Comprehensive Risk Analysis")
                     
-                    # Main metrics
-                    col1, col2, col3 = st.columns(3)
+                    # Main metrics with enhanced styling
+                    col1, col2, col3, col4 = st.columns(4)
                     
                     with col1:
-                        st.metric("Risk Probability", f"{probability:.1%}")
+                        st.markdown(f"""
+                        <div class="metric-card">
+                            <div style="text-align: center;">
+                                <h3 style="color: #667eea; margin: 0;">Risk Probability</h3>
+                                <div class="big-text" style="color: {get_risk_color(probability)};">
+                                    {probability:.1%}
+                                </div>
+                            </div>
+                        </div>
+                        """, unsafe_allow_html=True)
                     
                     with col2:
-                        risk_level = "High" if probability >= 0.6 else "Moderate" if probability >= 0.3 else "Low"
-                        st.metric("Risk Level", risk_level)
+                        risk_level = "Very High" if probability >= 0.75 else "High" if probability >= 0.5 else "Moderate" if probability >= 0.25 else "Low"
+                        risk_emoji = "🔴" if probability >= 0.75 else "🟠" if probability >= 0.5 else "🟡" if probability >= 0.25 else "🟢"
+                        st.markdown(f"""
+                        <div class="metric-card">
+                            <div style="text-align: center;">
+                                <h3 style="color: #667eea; margin: 0;">Risk Level</h3>
+                                <div class="big-text">
+                                    {risk_emoji} {risk_level}
+                                </div>
+                            </div>
+                        </div>
+                        """, unsafe_allow_html=True)
                     
                     with col3:
-                        st.metric("Confidence", "High" if len(analyze_risk_factors(patient_data)) > 2 else "Moderate")
+                        risk_factors = analyze_risk_factors(patient_data)
+                        confidence = "High" if len(risk_factors) > 3 else "Moderate" if len(risk_factors) > 1 else "Low"
+                        conf_emoji = "💪" if confidence == "High" else "👍" if confidence == "Moderate" else "🤔"
+                        st.markdown(f"""
+                        <div class="metric-card">
+                            <div style="text-align: center;">
+                                <h3 style="color: #667eea; margin: 0;">Confidence</h3>
+                                <div class="big-text">
+                                    {conf_emoji} {confidence}
+                                </div>
+                            </div>
+                        </div>
+                        """, unsafe_allow_html=True)
                     
-                    # Risk gauge
+                    with col4:
+                        urgency_level = "URGENT" if probability >= 0.75 else "HIGH" if probability >= 0.5 else "MODERATE" if probability >= 0.25 else "LOW"
+                        urgency_emoji = "🚨" if probability >= 0.75 else "⚠️" if probability >= 0.5 else "📋" if probability >= 0.25 else "✅"
+                        st.markdown(f"""
+                        <div class="metric-card">
+                            <div style="text-align: center;">
+                                <h3 style="color: #667eea; margin: 0;">Priority</h3>
+                                <div class="big-text">
+                                    {urgency_emoji} {urgency_level}
+                                </div>
+                            </div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                    
+                    # Risk gauge in chart container
+                    st.markdown('<div class="chart-container">', unsafe_allow_html=True)
                     fig = create_simple_gauge(probability)
                     if fig:
                         st.plotly_chart(fig, use_container_width=True)
+                    st.markdown('</div>', unsafe_allow_html=True)
                     
-                    # Risk factors analysis
+                    # Risk factors analysis with enhanced styling
                     risk_factors = analyze_risk_factors(patient_data)
                     
                     if risk_factors:
                         st.markdown("### ⚠️ Identified Risk Factors")
+                        
                         for factor, severity, detail in risk_factors:
-                            severity_color = "🔴" if severity == "High" else "🟡" if severity == "Medium" else "🟢"
-                            st.markdown(f"{severity_color} **{factor}** ({severity}): {detail}")
+                            severity_color = "#dc3545" if severity == "High" else "#ffc107" if severity == "Medium" else "#28a745"
+                            severity_icon = "🔴" if severity == "High" else "🟡" if severity == "Medium" else "🟢"
+                            
+                            st.markdown(f"""
+                            <div class="risk-factor" style="border-left-color: {severity_color};">
+                                <strong>{severity_icon} {factor}</strong> 
+                                <span style="color: {severity_color}; font-weight: 600;">({severity} Risk)</span>
+                                <br>
+                                <small style="color: #6c757d;">{detail}</small>
+                            </div>
+                            """, unsafe_allow_html=True)
+                    else:
+                        st.markdown("""
+                        <div class="success-box">
+                            <strong>✅ Excellent News!</strong><br>
+                            No significant risk factors identified in the current analysis.
+                        </div>
+                        """, unsafe_allow_html=True)
                     
-                    # Risk factors chart
+                    # Risk factors chart in container
                     if 'individual_risks' in results:
+                        st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+                        st.markdown("### 📈 Individual Risk Factor Analysis")
                         chart = create_risk_factors_chart(results['individual_risks'])
                         if chart:
                             st.plotly_chart(chart, use_container_width=True)
+                        st.markdown('</div>', unsafe_allow_html=True)
                     
-                    # Recommendations
+                    # Enhanced recommendations
                     recommendations = get_recommendations(probability)
                     
-                    risk_class = "risk-high" if probability >= 0.6 else "risk-moderate" if probability >= 0.3 else "risk-low"
+                    risk_class = "risk-very-high" if probability >= 0.75 else "risk-high" if probability >= 0.5 else "risk-moderate" if probability >= 0.25 else "risk-low"
                     
                     st.markdown(f"""
                     <div class="metric-card {risk_class}">
                         <h3>🩺 Clinical Recommendations</h3>
-                        <p><strong>Priority:</strong> {recommendations['urgency']}</p>
-                        <p><strong>Timeline:</strong> {recommendations['timeline']}</p>
-                    </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin: 1rem 0;">
+                            <div>
+                                <strong>Priority Level:</strong> 
+                                <span class="highlight-text">{recommendations['urgency']}</span>
+                            </div>
+                            <div>
+                                <strong>Action Timeline:</strong> 
+                                <span style="color: #495057; font-weight: 600;">{recommendations['timeline']}</span>
+                            </div>
+                        </div>
+                        
+                        <div style="background: rgba(255,255,255,0.7); padding: 1rem; border-radius: 10px; margin-top: 1rem;">
+                            <strong>📋 Recommended Actions:</strong>
+                            <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
                     """, unsafe_allow_html=True)
                     
-                    st.markdown("**Recommended Actions:**")
                     for action in recommendations['actions']:
-                        st.markdown(f"• {action}")
+                        st.markdown(f"<li style='margin: 0.3rem 0; color: #495057;'>{action}</li>", unsafe_allow_html=True)
+                    
+                    st.markdown("""
+                            </ul>
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
                     
                     # Export data
                     if st.button("📊 Export Results"):
