@@ -6,6 +6,19 @@
 import warnings
 warnings.filterwarnings("ignore")
 
+# ---- NumPy 2.x pickle compat shim (works even if runtime is NumPy 1.x) ----
+# Beberapa artefak dipickle pada NumPy 2.x memakai path modul "numpy._core".
+# Pada NumPy 1.x path ini tidak ada. Shim ini meng-alias-kan ke "numpy.core".
+import sys
+try:
+    import numpy as _np
+    if "numpy._core" not in sys.modules:
+        import numpy.core as _np_core
+        sys.modules["numpy._core"] = _np_core  # alias agar unpickle tidak gagal
+except Exception:
+    # Kalau gagal, biarkan saja; nanti loader akan tetap menampilkan error yang jelas
+    pass
+
 import os
 from pathlib import Path
 from datetime import datetime
@@ -105,14 +118,34 @@ def _find_deploy_dir() -> Path:
 DEPLOY_DIR = _find_deploy_dir()
 
 
+def _install_numpy_core_shim():
+    """Pasang alias numpy._core -> numpy.core ketika error unpickle muncul."""
+    try:
+        import numpy.core as _np_core
+        sys.modules["numpy._core"] = _np_core
+    except Exception:
+        pass
+
+
 def _load_joblib_any(candidates, what):
     errs = []
     for p in candidates:
         try:
             if p.exists():
                 return joblib.load(p)
+        except ModuleNotFoundError as e:
+            # tangani khusus untuk kasus numpy._core
+            if "numpy._core" in str(e):
+                _install_numpy_core_shim()
+                try:
+                    return joblib.load(p)
+                except Exception as e2:
+                    errs.append(f"{p} -> {e2.__class__.__name__}: {e2}")
+            else:
+                errs.append(f"{p} -> {e.__class__.__name__}: {e}")
         except Exception as e:
             errs.append(f"{p} -> {e.__class__.__name__}: {e}")
+
     st.error(f"Failed to load {what}. Tried:\n  " + "\n  ".join(str(x) for x in candidates))
     try:
         st.warning("DEPLOY_DIR contents: " + ", ".join(sorted(p.name for p in DEPLOY_DIR.iterdir())))
